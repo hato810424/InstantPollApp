@@ -2,36 +2,40 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "cross-env NODE_ENV=production tsx ./hono-entry.node.ts",
+    "run": "cross-env NODE_ENV=production tsx ./hono-entry.node.ts",
     "drizzle:generate": "drizzle-kit generate",
     "drizzle:migrate": "drizzle-kit migrate",
     "drizzle:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@hono/node-server": "^1.13.2",
+    "@universal-middleware/core": "^0.2.13",
+    "@universal-middleware/hono": "^0.2.12",
+    "@vitejs/plugin-react": "^4.3.2",
+    "better-sqlite3": "^11.3.0",
+    "dotenv": "^16.4.5",
     "drizzle-kit": "^0.26.2",
     "drizzle-orm": "^0.35.0",
-    "dotenv": "^16.4.5",
-    "better-sqlite3": "^11.3.0",
-    "@hono/node-server": "^1.13.2",
-    "@universal-middleware/hono": "^0.2.12",
     "hono": "^4.6.5",
-    "@vitejs/plugin-react": "^4.3.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "uuid": "^10.0.0",
     "vike-react": "^0.5.7",
-    "@universal-middleware/core": "^0.2.13"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@hono/vite-dev-server": "^0.16.0",
+    "@hono/zod-validator": "^0.4.1",
+    "@types/better-sqlite3": "^7.6.11",
+    "@types/node": "^18.19.55",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.1",
+    "@types/uuid": "^10.0.0",
+    "cross-env": "^7.0.3",
+    "tsx": "^4.19.1",
     "typescript": "^5.6.3",
     "vike": "^0.4.199",
-    "vite": "^5.4.9",
-    "@types/better-sqlite3": "^7.6.11",
-    "@hono/vite-dev-server": "^0.16.0",
-    "@types/node": "^18.19.55",
-    "tsx": "^4.19.1",
-    "cross-env": "^7.0.3",
-    "@types/react": "^18.3.11",
-    "@types/react-dom": "^18.3.1"
+    "vite": "^5.4.9"
   },
   "type": "module"
 }

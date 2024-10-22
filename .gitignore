@@ -140,3 +140,6 @@ dist
 # aws-cdk
 .cdk.staging
 cdk.out
+
+# database
+database/migrations/
