@@ -1,10 +1,8 @@
-import { dbSqlite } from "./database/drizzle/db";
+import { Variables } from "./server";
 
 declare global {
   namespace Vike {
-    interface PageContext {
-      db: ReturnType<typeof dbSqlite>;
-    }
+    interface PageContext extends Variables {};
   }
 }
 

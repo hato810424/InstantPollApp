@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [
     vike({}),
     devServer({
-      entry: "hono-entry.ts",
+      entry: "./server/index.ts",
 
       exclude: [
         /^\/@.+$/,

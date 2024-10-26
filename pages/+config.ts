@@ -10,8 +10,8 @@ export default {
   Layout,
 
   // https://vike.dev/head-tags
-  title: "My Vike App",
-  description: "Demo showcasing Vike",
+  title: "インスタントアンケートアプリ",
+  description: "即席でアンケート・投票を行えるアプリです。",
 
   extends: vikeReact,
 } satisfies Config;

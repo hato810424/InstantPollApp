@@ -1,13 +1,14 @@
 // https://vike.dev/data
-import * as drizzleQueries from "../../database/drizzle/queries/todos";
 import type { PageContextServer } from "vike/types";
 
+import { UserItem } from "../../database/drizzle/schema/users";
+
 export type Data = {
-  todo: { text: string }[];
+  user: UserItem | undefined;
 };
 
 export default async function data(_pageContext: PageContextServer): Promise<Data> {
-  const todo = await drizzleQueries.getAllTodos(_pageContext.db);
+  const user = _pageContext.userData;
 
-  return { todo };
+  return { user };
 }

@@ -4,13 +4,14 @@ import z from "zod";
 import { HTTPException } from "hono/http-exception";
 import { deleteCookie, getCookie, setCookie } from "hono/cookie";
 
-import { dbSqlite } from "./database/drizzle/db";
-import { userTable } from "./database/drizzle/schema/users";
+import { userTable } from "../database/drizzle/schema/users";
 import { eq } from "drizzle-orm";
 
 import * as uuid from "uuid";
 
-const app = new Hono();
+import { Variables } from "./index";
+
+const app = new Hono<{ Variables: Variables }>();
 
 const handler = app
   .get(
@@ -18,10 +19,10 @@ const handler = app
     async (c) => {
       const userId = getCookie(c, "voteUserId");
       if (userId) {
-        const result = await dbSqlite().select().from(userTable).where(eq(userTable.id, userId)).execute();
+        const result = await c.get("db").select().from(userTable).where(eq(userTable.id, userId)).get();
     
-        if (result[0]) {
-          return c.json(result[0]);
+        if (result) {
+          return c.json(result);
         }
 
         deleteCookie(c, "voteUserId");
@@ -42,9 +43,9 @@ const handler = app
       const userId = getCookie(c, "voteUserId");
 
       if (userId) {
-        const result = await dbSqlite().select().from(userTable).where(eq(userTable.id, userId)).execute();
+        const result = await c.get("db").select().from(userTable).where(eq(userTable.id, userId)).execute();
         if (result[0]) {
-          const insertResult = await dbSqlite().update(userTable).set({
+          const insertResult = await c.get("db").update(userTable).set({
             username: c.req.valid("form").username,
           }).where(eq(userTable.id, userId)).execute()
           
@@ -54,10 +55,15 @@ const handler = app
       
       const id = uuid.v7();
       
-      const insertResult = await dbSqlite().insert(userTable).values({
+      const insertResult = await c.get("db").insert(userTable).values({
         id: id,
         username: c.req.valid("form").username,
       }).execute();
+
+      c.set("userData", {
+        id: id,
+        username: c.req.valid("form").username
+      })
 
       setCookie(c, "voteUserId", id);
 

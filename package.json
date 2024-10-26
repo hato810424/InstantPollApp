@@ -2,7 +2,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "run": "cross-env NODE_ENV=production tsx ./hono-entry.node.ts",
+    "start": "cross-env NODE_ENV=production tsx ./server/index.prod.ts",
     "drizzle:generate": "drizzle-kit generate",
     "drizzle:migrate": "drizzle-kit migrate",
     "drizzle:studio": "drizzle-kit studio"

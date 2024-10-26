@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Counter } from "./Counter.js";
 
-import type { AppType } from "../../hono-api.js";
+import type { AppType } from "../../server/api.js";
 import { hc } from 'hono/client';
+import { useData } from "vike-react/useData";
+import { Data } from "./+data.js";
 
 export default function Page() {
+  const { user } = useData<Data>();
+
   const rpc = hc<AppType>("/");
-  const [username, setUsername] = useState<string>();
-  const [userId, setUserId] = useState<string | undefined>();
+  const [username, setUsername] = useState<string>(user ? user.username : "ゲストさん");
+  const [userId, setUserId] = useState<string | undefined>(user && user.id);
 
   useEffect(() => {
     (async() => {
@@ -15,8 +18,10 @@ export default function Page() {
 
       const data = await result.json();
 
-      setUsername(result.ok ? data.username : "ゲスト");
-      setUserId(result.ok ? data.id : undefined)
+      if (result.ok) {
+        setUsername(data.username);
+        setUserId(data.id)
+      }
     })();
   }, [])
   
@@ -29,7 +34,7 @@ export default function Page() {
           Interactive. <Counter />
         </li>
       </ul> */}
-      <p>あなたの名前「{username}」</p>
+      <p>あなたの名前「{username}」（{userId}）</p>
       <form onSubmit={(event) => {
         event.preventDefault();
         const form = new FormData(event.currentTarget);
@@ -46,7 +51,7 @@ export default function Page() {
           名前変更:
           <input type="text" name="username" defaultValue="" required />
         </label>
-        <button>これにする（タップ + クリック）</button>
+        <button>これにする（タップ or クリック）</button>
       </form>
     </>
   );
