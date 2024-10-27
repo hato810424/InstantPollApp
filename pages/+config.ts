@@ -1,4 +1,6 @@
 import vikeReact from "vike-react/config";
+import vikeReactQuery from 'vike-react-query/config'
+
 import type { Config } from "vike/types";
 import Layout from "../layouts/LayoutDefault.js";
 
@@ -13,5 +15,15 @@ export default {
   title: "インスタントアンケートアプリ",
   description: "即席でアンケート・投票を行えるアプリです。",
 
-  extends: vikeReact,
+  extends: [vikeReact, vikeReactQuery],
+
+  queryClientConfig: {
+    defaultOptions: {
+      queries: {
+        refetchOnWindowFocus: true,
+        gcTime: Infinity,
+        staleTime: 1000 * 60 * 5, // 5分キャッシュ
+      }
+    }
+  }
 } satisfies Config;

@@ -1,4 +1,5 @@
 import react from "@vitejs/plugin-react";
+import { compiled } from "vite-plugin-compiled-react";
 import devServer from "@hono/vite-dev-server";
 import { defineConfig } from "vite";
 import vike from "vike/plugin";
@@ -6,6 +7,9 @@ import vike from "vike/plugin";
 export default defineConfig({
   plugins: [
     vike({}),
+    compiled({
+      extract: true,
+    }),
     devServer({
       entry: "./server/index.ts",
 

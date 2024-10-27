@@ -1,3 +1,7 @@
+:root {
+  --base-font-family: "Noto SansJP", "Noto Sans JP", "Noto Sans", sans-serif;
+}
+
 /* Links */
 a {
   text-decoration: none;
@@ -13,7 +17,7 @@ a {
 /* Reset */
 body {
   margin: 0;
-  font-family: sans-serif;
+  font-family: "Roboto", "Inter", var(--base-font-family);
 }
 * {
   box-sizing: border-box;

@@ -8,12 +8,11 @@ import { dbSqlite } from "../database/drizzle/db";
 import { UserItem, userTable } from "../database/drizzle/schema/users";
 import { eq } from "drizzle-orm";
 import apiRoute from "./api";
-import { renderPage } from "vike/server";
-import { PageContext } from "vike/types";
+import { vike } from "vike-node/hono";
 
 export type Variables = {
   db: ReturnType<typeof dbSqlite>,
-  userData: undefined | UserItem,
+  userData: Partial<UserItem> | UserItem,
 };
 
 const app = new Hono<{ Variables: Variables }>()
@@ -30,6 +29,13 @@ app.use(async (c, next) => {
 // Cookieで保存されたUserだったら代入
 app.use(async (c, next) => {
   const userId = getCookie(c, "voteUserId");
+  
+  c.set("userData", {
+    id: undefined,
+    username: null,
+    is_moderator: false,
+  })
+  
   if (userId) {
     const result = await c.get("db").select().from(userTable).where(eq(userTable.id, userId)).get();
 
@@ -52,25 +58,14 @@ app.route("/", apiRoute);
  *
  * @link {@see https://vike.dev}
  **/
-app.all("*", async (c) => {
-  const pageContextInit = {
+app.use(vike({
+  pageContext: (c) => ({
     db: c.get("db"),
     userData: c.get("userData"),
-
-    urlOriginal: c.req.url,
-    headersOriginal: c.req.header()
-  } satisfies Variables | PageContext;
-
-  const pageContext = await renderPage(pageContextInit);
-  const response = pageContext.httpResponse;
-
-  const { readable, writable } = new TransformStream();
-  response.pipe(writable);
-
-  return new Response(readable, {
-    status: response.statusCode,
-    headers: response.headers,
-  });
-});
+  }),
+  static: {
+    root: "./dist/client/"
+  }
+}));
 
 export default app;

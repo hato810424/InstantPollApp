@@ -27,8 +27,8 @@ const handler = app
 
         deleteCookie(c, "voteUserId");
       }
-      
-      throw new HTTPException(404);
+
+      return c.json(c.get("userData"));
     }
   )
   .put(
@@ -36,7 +36,7 @@ const handler = app
     zValidator(
       'form',
       z.object({
-        username: z.string(),
+        username: z.string().optional(),
       }),
     ),
     async (c) => {
@@ -46,7 +46,7 @@ const handler = app
         const result = await c.get("db").select().from(userTable).where(eq(userTable.id, userId)).execute();
         if (result[0]) {
           const insertResult = await c.get("db").update(userTable).set({
-            username: c.req.valid("form").username,
+            username: c.req.valid("form").username ?? null,
           }).where(eq(userTable.id, userId)).execute()
           
           return c.json(insertResult);

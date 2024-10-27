@@ -1,27 +1,38 @@
+import "@mantine/core/styles.css";
 import "./style.css";
 
 import React from "react";
 import logoUrl from "../assets/logo.svg";
 import { Link } from "../components/Link.js";
+import { TextQuote, Vote } from "lucide-react";
+
+import { AppShell, AppShellHeader, Center, Container, Group, MantineProvider } from "@mantine/core";
+import theme from "./theme";
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { css } from "@compiled/react";
 
 export default function LayoutDefault({ children }: { children: React.ReactNode }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        maxWidth: 900,
-        margin: "auto",
-      }}
-    >
-      <Sidebar>
-        <Logo />
-        <Link href="/">Welcome</Link>
-        <Link href="/account">Account</Link>
-        <Link href="/star-wars">Data Fetching</Link>
-        {""}
-      </Sidebar>
-      <Content>{children}</Content>
-    </div>
+    <MantineProvider theme={theme}>
+      <AppShell
+        header={{ 
+          height: "md",
+          offset: false,
+        }}
+        padding="md"
+      >
+        <AppShell.Main>
+          <header css={css({
+          })}>
+            <Center m={"md"}>
+              <Vote size="20" />インスタントアンケートアプリ
+            </Center>
+          </header>
+          {children}
+        </AppShell.Main>
+      </AppShell>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </MantineProvider>
   );
 }
 
