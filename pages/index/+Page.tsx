@@ -35,7 +35,7 @@ export default function Page() {
       {user.is_moderator && (
         <Stack>
           <h2>管理画面</h2>
-          <li><a href="/create/poll">Pollを作成</a></li>
+          <li><a href="/poll/create">Pollを作成</a></li>
         </Stack>
       )}
     </Container>

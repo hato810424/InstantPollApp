@@ -5,7 +5,7 @@ import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useHydrate } from "../../../utils/ssr/create-dehydrated-state";
 import { hc, InferResponseType } from "hono/client";
 import { AppType } from "../../../server/api";
-import { Alert, Center, Checkbox, Container, LoadingOverlay, Space } from "@mantine/core";
+import { Alert, Center, Checkbox, Container } from "@mantine/core";
 import { css } from "@compiled/react";
 import { useForm } from "@mantine/form";
 import { Button, Group, TextInput } from "@mantine/core";
@@ -38,13 +38,11 @@ export default function Page() {
           <Group p={"lg"}>
             {user.username === null ? (
               <Alert variant="light" color="gray" title="匿名で回答中です">
-                名前を伝えて回答しますか？
-                <Button size="xs" onClick={() => setPage("initial")}>さっきの画面に戻る</Button>
+                <Button size="xs" onClick={() => setPage("initial")}>やっぱり名前を変更する</Button>
               </Alert>
             ) : (
               <Alert variant="light" color="gray" title={"「" + user.username + "」として回答中です"}>
-                匿名で回答しますか？
-                <Button size="xs" onClick={() => setPage("initial")}>さっきの画面に戻る</Button>
+                <Button size="xs" onClick={() => setPage("initial")}>やっぱり名前を変更する</Button>
               </Alert>
             )}
           </Group>
@@ -110,23 +108,25 @@ export const NameChange = ({
           form: {
             username: values.name,
           }
-        }).then(() => {
-          queryClient.setQueryData<InferResponseType<typeof meGet>>(["/api/@me"], (data) => ({
-            ...data,
-            username: values.name
-          }));
+        }).then(async (res) => {
+          const resJson = await res.json();
+            queryClient.setQueryData<InferResponseType<typeof meGet>>(["/api/@me"], (data) => ({
+              ...data,
+              ...resJson,
+            }));
           next();
         }).finally(() => setPutting(false))
       } else {
         // 匿名ユーザーの名前をnullにする
-        if (!values.signature && user.username !== null) {
+        if (user.username === undefined || (!values.signature && user.username !== null)) {
           setPutting(true);
           await rpc.api["@me"].$put({
             form: {}
-          }).then(() => {
+          }).then(async (res) => {
+            const resJson = await res.json();
             queryClient.setQueryData<InferResponseType<typeof meGet>>(["/api/@me"], (data) => ({
               ...data,
-              username: null
+              ...resJson,
             }));
             next();
           }).finally(() => setPutting(false))
@@ -137,7 +137,7 @@ export const NameChange = ({
     })}>
       <Checkbox
         mt="md"
-        label={"名前をつたえる"}
+        label={user.username == null ? "名前をつたえる" : "名前をつたえる （以前設定した名前があります）"}
         key={form.key('signature')}
         {...form.getInputProps('signature', { type: 'checkbox' })}
       />

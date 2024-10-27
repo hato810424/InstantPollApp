@@ -1,9 +1,9 @@
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const userTable = sqliteTable('users', {
-  id: text("id").notNull().unique().primaryKey(),
-  username: text("username"),
-  is_moderator: integer({ mode: "boolean" }).default(false),
+  id: text().notNull().unique().primaryKey(),
+  username: text(),
+  is_moderator: integer({ mode: "boolean" }).notNull().default(false),
 })
 
 export type UserItem = typeof userTable.$inferSelect;

@@ -32,7 +32,7 @@ app.use(async (c, next) => {
   
   c.set("userData", {
     id: undefined,
-    username: null,
+    username: undefined,
     is_moderator: false,
   })
   
