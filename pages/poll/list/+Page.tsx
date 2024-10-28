@@ -1,4 +1,4 @@
-import { Button, Container, Table } from "@mantine/core";
+import { Button, Center, Container, Table, Text } from "@mantine/core";
 import { Data } from "./+data.shared";
 import { useData } from "vike-react/useData";
 import { useHydrate } from "@/utils/ssr/create-dehydrated-state";
@@ -6,6 +6,28 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { AppType } from "@/server/api";
 import { hc } from "hono/client";
 import { navigate } from "vike/client/router";
+import { QRCodeSVG } from 'qrcode.react';
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+import { css } from "@compiled/react";
+
+const QRCodeToast = ({
+  url
+}: {
+  url: URL
+}) => {
+  return (
+    <div>
+      <QRCodeSVG
+        value={url.toString()}
+        size={256}
+      />
+      <p css={css({
+        fontSize: "1.5rem",
+      })}>{url.toString()}</p>
+    </div>
+  )
+}
 
 export default function Page() {
   const { dehydratedState } = useData<Data>();
@@ -35,6 +57,21 @@ export default function Page() {
       <Table.Td>{poll.poll.author} ({poll.author_id})</Table.Td>
       <Table.Td>{poll.answer_count}</Table.Td>
       <Table.Td><a href={"/polls/" + poll.poll_id + "/detail"}>詳細</a></Table.Td>
+      <Table.Td>
+        <Center>
+          <Button onClick={() => {
+            const url = new URL("/polls/" + poll.poll_id, location.origin);
+    
+            console.log(url);
+        
+            withReactContent(Swal).fire({
+              title: <QRCodeToast url={url} />,
+              width: "60%",
+              confirmButtonText: "閉じる",
+            });
+          }}>QRコード</Button>
+        </Center>
+      </Table.Td>
     </Table.Tr>
   ));
 
@@ -48,6 +85,7 @@ export default function Page() {
             <Table.Th>説明</Table.Th>
             <Table.Th>作成者</Table.Th>
             <Table.Th>回答数</Table.Th>
+            <Table.Th></Table.Th>
             <Table.Th></Table.Th>
           </Table.Tr>
         </Table.Thead>

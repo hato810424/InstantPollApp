@@ -3,6 +3,7 @@
     "dev": "vite",
     "build": "vite build",
     "start": "cross-env NODE_ENV=production tsx ./server/index.prod.ts",
+    "ngrok": "tsx --env-file=.env ./ngrok.ts",
     "drizzle:generate": "drizzle-kit generate",
     "drizzle:migrate": "drizzle-kit migrate",
     "drizzle:studio": "drizzle-kit studio"
@@ -12,6 +13,7 @@
     "@formkit/auto-animate": "^0.8.2",
     "@hello-pangea/dnd": "^17.0.0",
     "@hono/node-server": "^1.13.2",
+    "@mantine/charts": "^7.13.4",
     "@mantine/core": "^7.13.4",
     "@mantine/form": "^7.13.4",
     "@mantine/hooks": "^7.13.4",
@@ -33,6 +35,9 @@
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.1",
     "react-twemoji": "^0.6.0",
+    "recharts": "2",
+    "sweetalert2": "^11.14.4",
+    "sweetalert2-react-content": "^5.0.7",
     "uuid": "^10.0.0",
     "vike-react": "^0.5.7",
     "vike-react-query": "^0.1.1",
@@ -42,6 +47,7 @@
   "devDependencies": {
     "@hono/vite-dev-server": "^0.16.0",
     "@hono/zod-validator": "^0.4.1",
+    "@ngrok/ngrok": "^1.4.1",
     "@types/better-sqlite3": "^7.6.11",
     "@types/node": "^18.19.55",
     "@types/react": "^18.3.11",

@@ -8,7 +8,6 @@ import { useHydrate } from "../../utils/ssr/create-dehydrated-state.js";
 import { NameChange } from "../polls/@id/+Page.jsx";
 import { Container, Stack } from "@mantine/core";
 import { css } from "@compiled/react";
-import { QRCodeSVG } from 'qrcode.react';
 
 export default function Page() {
   const { dehydratedState } = useData<Data>();

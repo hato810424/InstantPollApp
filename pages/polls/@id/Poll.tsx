@@ -5,6 +5,10 @@ import { useCallback } from "react";
 import { PollItem } from "@/database/drizzle/schema/polls";
 import { PollRadioButton, PollRadioButtonData, PollRadioButtonProps } from "./PollComponents";
 import { FormComponentUnionType, QuestionTypes } from "@/pages/poll/create/+Page";
+import { hc } from "hono/client";
+import { AppType } from "@/server/api";
+import Swal from "sweetalert2";
+import { useQueryClient } from "@tanstack/react-query";
 
 export type FormAnswerData = PollRadioButtonData;
 export type FormData = {
@@ -27,11 +31,14 @@ const questionComponents = {
 
 export const Poll = ({
   poll,
-  preview = false
+  preview = false,
+  success = () => {},
 }: {
   poll: PollItem,
-  preview?: boolean
+  preview?: boolean,
+  success?: () => void,
 }) => {
+  const rpc = hc<AppType>("/");
   const fields = useCallback(transformFields, [poll])(poll.data.fields);
 
   const form = useForm({
@@ -67,7 +74,27 @@ export const Poll = ({
         })
 
         if (isError) return;
-        console.log(data);
+        rpc.api.polls[":id"].answer.$post({
+          param: {
+            id: poll.id,
+          },
+          json: data,
+        }).then(res => {
+          if (res.ok) {
+            success();
+
+            Swal.fire({
+              title: "回答が完了しました！",
+              icon: "success"
+            });
+          } else {
+            Swal.fire({
+              title: "送信中に何かエラーが発生しました...",
+              text: `${res.status} - ${res.statusText}`,
+              icon: "error"
+            })
+          }
+        })
       })}>
         <Stack>
           <Stack>

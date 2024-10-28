@@ -16,14 +16,4 @@ export default {
   description: "即席でアンケート・投票を行えるアプリです。",
 
   extends: [vikeReact],
-
-  // queryClientConfig: {
-  //   defaultOptions: {
-  //     queries: {
-  //       refetchOnWindowFocus: true,
-  //       gcTime: Infinity,
-  //       staleTime: 1000 * 60 * 5, // 5分キャッシュ
-  //     }
-  //   }
-  // }
 } satisfies Config;

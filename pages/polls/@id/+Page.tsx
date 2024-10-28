@@ -42,7 +42,7 @@ export default function Page() {
     return;
   }
 
-  const [page, setPage] = useState<"initial" | "poll">("initial");
+  const [page, setPage] = useState<"initial" | "poll" | "success">("initial");
 
   if (page === "initial") {
     return <InitialScreen next={() => setPage("poll")} />;
@@ -63,7 +63,19 @@ export default function Page() {
           </Group>
         </Center>
       </Container>
-      <Poll poll={poll} />
+      <Poll poll={poll} success={() => setPage("success")} />
+    </>;
+  } if (page === "success") {
+    return <>
+      <Container size="md">
+        <h1 css={normalWeight}>回答済み！</h1>
+        <p>
+          「{poll.data.title}」へご回答ありがとうございました！
+        </p>
+        <Group justify="flex-end" mt="md">
+          <Button onClick={() => setPage("poll")}>回答を変更したい</Button>
+        </Group>
+      </Container>
     </>;
   }
 }

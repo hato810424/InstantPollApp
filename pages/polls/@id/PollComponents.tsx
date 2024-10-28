@@ -32,12 +32,12 @@ export const PollRadioButton = ({
           {componentData.data.questions.map((button, index) => (
             <Radio
               key={index}
-              value={button.label}
+              value={button.key}
               label={button.label}
               onChange={(e) => {
                 setData({
                   ...data,
-                  value: button.label,
+                  value: button.key,
                 })
               }}
             />

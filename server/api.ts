@@ -5,7 +5,7 @@ import { HTTPException } from "hono/http-exception";
 import { deleteCookie, getCookie, setCookie } from "hono/cookie";
 
 import { userTable } from "../database/drizzle/schema/users";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 import * as uuid from "uuid";
 
@@ -15,6 +15,9 @@ import { FormComponent } from "@/pages/poll/create/+Page";
 import { nanoid } from "nanoid";
 import { pollTable } from "@/database/drizzle/schema/polls";
 import { getPoll, getPolls } from "@/database/drizzle/queries/polls";
+import { FormAnswerData, FormData } from "@/pages/polls/@id/Poll";
+import { answerTable } from "@/database/drizzle/schema/answers";
+import { getDetail } from "@/database/drizzle/queries/answers";
 
 const app = new Hono<{ Variables: Variables }>();
 
@@ -111,7 +114,7 @@ const handler = app
       if (result && result.data !== null) {
         return c.json(result.data);
       } else {
-        throw new HTTPException(404);
+        return c.json({});
       }
     }
   )
@@ -142,18 +145,6 @@ const handler = app
       }
 
       return c.json("ok");
-    }
-  )
-  .get(
-    "/api/polls/:id",
-    async (c) => {
-      const pollId = c.req.param("id");
-      const result = await getPoll(c.get("db"), pollId)
-      if (!result) {
-        throw new HTTPException(404);
-      } else {
-        return c.json(result);
-      }
     }
   )
   .get(
@@ -218,6 +209,113 @@ const handler = app
       }).returning().get();
 
       return c.json(created, 201);
+    }
+  )
+  .get(
+    "/api/polls/:id",
+    async (c) => {
+      const pollId = c.req.param("id");
+      const result = await getPoll(c.get("db"), pollId)
+      if (!result) {
+        throw new HTTPException(404);
+      } else {
+        return c.json(result);
+      }
+    }
+  )
+  .get(
+    "/api/polls/:id/detail",
+    async (c) => {
+      const id = c.get("userData").id;
+      if (c.get("userData").is_moderator !== true || !id) {
+        throw new HTTPException(403);
+      }
+      
+      const pollId = c.req.param("id");
+      const result = await getDetail(c.get("db"), pollId)
+      if (!result) {
+        throw new HTTPException(404);
+      } else {
+        return c.json(result);
+      }
+    }
+  )
+  .post(
+    "/api/polls/:id/answer",
+    zValidator(
+      'json',
+      z.array(z.object({
+        key: z.string(),
+        value: z.any(),
+      }))
+    ),
+    async (c) => {
+      const pollId = c.req.param("id");
+      const result = await getPoll(c.get("db"), pollId)
+      if (!result) {
+        throw new HTTPException(404);
+      }
+
+      const id = c.get("userData").id;
+      if (!id) {
+        throw new HTTPException(403);
+      }
+
+      const reqData = c.req.valid("json") as FormAnswerData[];
+
+      const fields = result.data.fields.reduce((result: {
+        [key: string]: {
+          key: string,
+          value: string[],
+        }
+      }, fields) => {
+        result[fields.key] = {
+          key: fields.key,
+          value: fields.data.questions.map((question) => question.key),
+        };
+        return result;
+      }, {});
+
+      // 正規性チェック
+      // TODO: ラジオボタン専用になってるので複数対応する場合は実装書き直し必須
+      const fieldKeys = new Set(result.data.fields.map(field => field.key));
+      const data: FormAnswerData[] = [];
+      const usedKeys = new Set<string>();
+      for (const field of reqData) {
+        if (fieldKeys.has(field.key) && !usedKeys.has(field.key)) {
+          if (fields[field.key].value.some(val => val === field.value)) {
+            data.push(field);
+            usedKeys.add(field.key);
+            continue;
+          } else {
+            console.error("存在していない選択肢");
+            throw new HTTPException(400);
+          }
+        } else if (usedKeys.has(field.key)) {
+          throw new HTTPException(400);
+        }
+      }
+
+      const answerResult = await c.get("db").select().from(answerTable).where(and(
+        eq(answerTable.user_id, id),
+        eq(answerTable.poll_id, result.id),
+      )).get();
+      if (answerResult) {
+        await c.get("db").update(answerTable).set({
+          data: data
+        }).where(and(
+          eq(answerTable.user_id, id),
+          eq(answerTable.poll_id, result.id),
+        )).execute();
+        return c.json("上書き", 200);
+      } else {
+        await c.get("db").insert(answerTable).values({
+          user_id: id,
+          poll_id: result.id,
+          data: data,
+        }).execute();
+        return c.json("新規", 201);
+      }
     }
   )
 
