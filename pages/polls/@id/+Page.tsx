@@ -6,16 +6,13 @@ import { useHydrate } from "../../../utils/ssr/create-dehydrated-state";
 import { hc, InferResponseType } from "hono/client";
 import { AppType } from "../../../server/api";
 import { Alert, Center, Checkbox, Container } from "@mantine/core";
-import { css } from "@compiled/react";
 import { useForm } from "@mantine/form";
 import { Button, Group, TextInput } from "@mantine/core";
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { usePageContext } from "vike-react/usePageContext";
 import { Poll } from "./Poll";
-
-const h1 = css({
-  fontWeight: "normal",
-});
+import { navigate } from "vike/client/router";
+import { normalWeight } from "../../../utils/styles";
 
 export default function Page() {
   const { routeParams } = usePageContext();
@@ -33,13 +30,17 @@ export default function Page() {
   const pollId = routeParams.id;
   const { data: poll } = useSuspenseQuery({
     queryKey: ['/api/polls/' + pollId],
-    queryFn: () =>
-      rpc.api.polls[":id"].$get({
-        param: {
-          id: pollId,
-        }
-      }).then((res) => res.json())
-  })
+    queryFn: () => rpc.api.polls[":id"].$get({
+      param: {
+        id: pollId,
+      }
+    }).then((res) => res.json()),
+  });
+
+  if (!poll.id) {
+    navigate("/polls/notfound");
+    return;
+  }
 
   const [page, setPage] = useState<"initial" | "poll">("initial");
 
@@ -74,7 +75,7 @@ const InitialScreen = ({
 }) => {
   return (
     <Container size={"xs"} mt={"lg"} p={"md"}>
-      <h1 css={h1}>答える前に..</h1>
+      <h1 css={normalWeight}>答える前に..</h1>
       <p>あなたの名前を伝えませんか？</p>
       <NameChange next={next} />
     </Container>

@@ -1,8 +1,8 @@
 // https://vike.dev/data
 import type { PageContextServer } from "vike/types";
 import { createDehydratedState } from "../../../utils/ssr/create-dehydrated-state";
-import { pollTable } from "@/database/drizzle/schema/polls";
-import { eq } from "drizzle-orm";
+import { getPoll } from "@/database/drizzle/queries/polls";
+import { redirect } from "vike/abort";
 
 export type Data = Awaited<ReturnType<typeof data>>;
 
@@ -13,8 +13,12 @@ export default async function data(_pageContext: PageContextServer) {
   }
 
   const poll_id = _pageContext.routeParams.id;
-  const result = await _pageContext.db.select().from(pollTable).where(eq(pollTable.id, poll_id)).get();
-  const poll_data = result ? result : null;
+  const result = await getPoll(_pageContext.db, poll_id);
+  const poll_data = result ? result : {};
+
+  if (!result) {
+    throw redirect("/polls/notfound");
+  }
 
   const dehydratedState = await createDehydratedState([
     {
