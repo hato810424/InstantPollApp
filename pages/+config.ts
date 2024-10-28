@@ -15,5 +15,8 @@ export default {
   title: "インスタントアンケートアプリ",
   description: "即席でアンケート・投票を行えるアプリです。",
 
+  // https://vike.dev/lang
+  lang: "ja",
+
   extends: [vikeReact],
 } satisfies Config;
