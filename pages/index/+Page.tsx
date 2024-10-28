@@ -36,6 +36,7 @@ export default function Page() {
         <Stack>
           <h2>管理画面</h2>
           <li><a href="/poll/create">Pollを作成</a></li>
+          <li><a href="/poll/list">Pollを確認</a></li>
         </Stack>
       )}
     </Container>

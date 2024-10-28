@@ -14,6 +14,7 @@ import { draftTable } from "@/database/drizzle/schema/drafts";
 import { FormComponent } from "@/pages/poll/create/+Page";
 import { nanoid } from "nanoid";
 import { pollTable } from "@/database/drizzle/schema/polls";
+import { getPoll, getPolls } from "@/database/drizzle/queries/polls";
 
 const app = new Hono<{ Variables: Variables }>();
 
@@ -147,12 +148,24 @@ const handler = app
     "/api/polls/:id",
     async (c) => {
       const pollId = c.req.param("id");
-      const result = await c.get("db").select().from(pollTable).where(eq(pollTable.id, pollId)).get();
+      const result = await getPoll(c.get("db"), pollId)
       if (!result) {
         throw new HTTPException(404);
       } else {
         return c.json(result);
       }
+    }
+  )
+  .get(
+    "/api/polls",
+    async (c) => {
+      const id = c.get("userData").id;
+      if (c.get("userData").is_moderator !== true || !id) {
+        throw new HTTPException(403);
+      }
+
+      const polls = await getPolls(c.get("db"));
+      return c.json(polls);
     }
   )
   .post(
