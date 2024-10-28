@@ -2,7 +2,7 @@ import "@mantine/core/styles.css";
 import '@mantine/charts/styles.css';
 import "./style.css";
 
-import React from "react";
+import React, { Suspense } from "react";
 import { Vote } from "lucide-react";
 
 import { AppShell, Center, MantineProvider } from "@mantine/core";
@@ -25,24 +25,26 @@ export default function LayoutDefault({ children }: { children: React.ReactNode 
   return (
     <QueryClientProvider client={queryClient}>
       <MantineProvider theme={theme}>
-        <AppShell
-          header={{ 
-            height: "md",
-            offset: false,
-          }}
-          padding="md"
-        >
-          <AppShell.Main>
-            <header css={css({
-            })}>
-              <Center m={"md"}>
-                <Vote size="20" />インスタントアンケートアプリ
-              </Center>
-            </header>
-            {children}
-          </AppShell.Main>
-        </AppShell>
-        <ReactQueryDevtools initialIsOpen={false} />
+        <Suspense>
+          <AppShell
+            header={{ 
+              height: "md",
+              offset: false,
+            }}
+            padding="md"
+          >
+            <AppShell.Main>
+              <header css={css({
+              })}>
+                <Center m={"md"}>
+                  <Vote size="20" />インスタントアンケートアプリ
+                </Center>
+              </header>
+              {children}
+            </AppShell.Main>
+          </AppShell>
+          <ReactQueryDevtools initialIsOpen={false} />
+        </Suspense>
       </MantineProvider>
     </QueryClientProvider>
   );

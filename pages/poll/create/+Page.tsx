@@ -28,12 +28,20 @@ export default function Page() {
     navigate("/");
   }
 
-  const { data: draft } = useSuspenseQuery<FormComponent>({
+  const { data: draft } = useSuspenseQuery<FormComponent | {}>({
     queryKey: ['/api/draft'],
     queryFn: () =>
-      rpc.api.draft.$get().then((res) => res.json() as Promise<FormComponent>)
+      rpc.api.draft.$get().then((res) => res.json())
   })
-  
+
+  const draftData: FormComponent = {
+    title: "",
+    description: "",
+    author: "",
+    fields: [],
+    ...draft,
+  }
+
   return (
     <Container size={"md"}>
       <h1>Pollを作成</h1>
@@ -108,7 +116,7 @@ const CreateForm = memo(({
     >
       <Stack>
         <Stack>
-          <TextInput label={"タイトル"} placeholder="好きなたべもの" key={form.key("title")} required {...form.getInputProps("title")} />
+          <TextInput label={"タイトル"} key={form.key("title")} required {...form.getInputProps("title")} />
           <Textarea label={"説明・概要"} placeholder="(任意入力)" key={form.key("description")} {...form.getInputProps("description")} />
           <TextInput label={"作成者名"} key={form.key("author")} required {...form.getInputProps("author")} />
         </Stack>
