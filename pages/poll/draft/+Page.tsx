@@ -1,6 +1,4 @@
-import { css } from "@compiled/react";
-import { md5 } from "js-md5";
-import { Button, Container, Fieldset, Group, Radio, Stack } from "@mantine/core";
+import { Button, Container, Group, Space } from "@mantine/core";
 import { Data } from "./+data.shared";
 import { useData } from "vike-react/useData";
 import { useHydrate } from "@/utils/ssr/create-dehydrated-state";
@@ -8,11 +6,9 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { AppType } from "@/server/api";
 import { hc } from "hono/client";
 import { navigate } from "vike/client/router";
-import { FormComponent } from "../create/+Page";
-
-const h1 = css({
-  fontWeight: "normal",
-});
+import { Poll } from "@/pages/polls/@id/Poll";
+import { PollItem } from "@/database/drizzle/schema/polls";
+import { nanoid } from "nanoid";
 
 export default function Page() {
   const { dehydratedState } = useData<Data>();
@@ -29,47 +25,40 @@ export default function Page() {
     navigate("/");
   }
 
-  const { data: draft } = useSuspenseQuery<FormComponent>({
+  const { data: draft } = useSuspenseQuery({
     queryKey: ['/api/draft'],
+    queryFn: () =>
+      rpc.api.draft.$get().then((res) => res.json())
   })
 
-  return (
+  const poll = {
+    id: nanoid(),
+    author_id: user.id ?? "",
+    data: draft,
+  } satisfies PollItem
+
+  return <>
+    <Poll preview={true} poll={poll} />
+    <Space h="md" />
     <Container size="md">
-      <small>{draft.author}によって作成された質問です</small>
-      <h1 css={h1}>「{draft.title}」のプレビュー</h1>
-      <p style={{ 
-        whiteSpace: "pre-wrap",
-      }}>{draft.description}</p>
-      <Stack>
-        <Stack>
-          {draft.fields.map((question, index) => (
-            <Fieldset key={index}>
-              <Radio.Group
-                name={md5(JSON.stringify(question.data))}
-                label={question.data.title}
-                withAsterisk
-              >
-                <Stack mt="xs">
-                  {question.data.questions.map((button, index) => (
-                    <Radio key={index} value={button.label} label={button.label} />
-                  ))}
-                </Stack>
-              </Radio.Group>
-            </Fieldset>
-          ))}
-        </Stack>
-        <Group justify="space-between">
-          <Button onClick={() => {
-            navigate("/poll/create")
-          }}>戻る</Button>
-          <Button color="red" onClick={() => {
-            const result = confirm("公開しますか？");
-            if (result) {
-              console.log("test");
+      <Group justify="space-between">
+        <Button onClick={() => {
+          navigate("/poll/create")
+        }}>戻る</Button>
+        <Button color="red" onClick={async () => {
+          const result = confirm("公開しますか？");
+          if (result) {
+            const res = await rpc.api.polls.$post({
+              json: draft
+            });
+
+            if (res.ok) {
+              const data = await res.json();
+              navigate("/polls/" + data.id);
             }
-          }}>公開</Button>
-        </Group>
-      </Stack>
+          }
+        }}>公開</Button>
+      </Group>
     </Container>
-  )
+  </>;
 }

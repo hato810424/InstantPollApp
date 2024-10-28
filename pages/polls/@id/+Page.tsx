@@ -10,12 +10,15 @@ import { css } from "@compiled/react";
 import { useForm } from "@mantine/form";
 import { Button, Group, TextInput } from "@mantine/core";
 import { useAutoAnimate } from '@formkit/auto-animate/react'
+import { usePageContext } from "vike-react/usePageContext";
+import { Poll } from "./Poll";
 
 const h1 = css({
   fontWeight: "normal",
 });
 
 export default function Page() {
+  const { routeParams } = usePageContext();
   const { dehydratedState } = useData<Data>();
   useHydrate(dehydratedState);
 
@@ -27,12 +30,23 @@ export default function Page() {
       rpc.api["@me"].$get().then((res) => res.json())
   })
 
+  const pollId = routeParams.id;
+  const { data: poll } = useSuspenseQuery({
+    queryKey: ['/api/polls/' + pollId],
+    queryFn: () =>
+      rpc.api.polls[":id"].$get({
+        param: {
+          id: pollId,
+        }
+      }).then((res) => res.json())
+  })
+
   const [page, setPage] = useState<"initial" | "poll">("initial");
 
   if (page === "initial") {
     return <InitialScreen next={() => setPage("poll")} />;
   } if (page === "poll") {
-    return (
+    return <>
       <Container size="md">
         <Center>
           <Group p={"lg"}>
@@ -47,9 +61,9 @@ export default function Page() {
             )}
           </Group>
         </Center>
-        <h1 css={h1}>「」</h1>
       </Container>
-    );
+      <Poll poll={poll} />
+    </>;
   }
 }
 

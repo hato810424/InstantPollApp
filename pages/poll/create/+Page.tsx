@@ -1,17 +1,16 @@
 import React, { memo } from "react";
-import clsx from "clsx";
-import { nanoid } from "nanoid";
 import { useData } from "vike-react/useData";
 import { Data } from "./+data.shared";
 import { useHydrate } from "@/utils/ssr/create-dehydrated-state";
 import { hc } from "hono/client";
 import { AppType } from "@/server/api";
-import { useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { navigate } from 'vike/client/router'
 import { Button, Container, Divider, Group, Menu, Stack, Textarea, TextInput, Tooltip } from "@mantine/core";
 import { CreateRadioButton, RadioButtonProps } from "./CreateRadioButton";
 import { useListState } from "@mantine/hooks";
 import { useForm } from "@mantine/form";
+import { nanoid } from "nanoid";
 
 export default function Page() {
   const { dehydratedState } = useData<Data>();
@@ -44,13 +43,14 @@ export default function Page() {
   );
 }
 
-const questionComponents = {
+export const questionComponents = {
   radio: (props: RadioButtonProps) => <CreateRadioButton {...props} />,
 } as const;
 
 type ComponentProps<T> = T extends React.FC<infer P> ? P : never;
-type FormComponentData<T extends keyof typeof questionComponents> = {
+export type FormComponentData<T extends keyof typeof questionComponents> = {
   type: T;
+  key: string;
   data: Parameters<ComponentProps<typeof questionComponents[T]>["setData"]>[0];
 };
 export type FormComponentUnionType = FormComponentData<keyof typeof questionComponents>;
@@ -122,7 +122,7 @@ const CreateForm = memo(({
 
             // コンポーネントをレンダリングし、指定したpropsを渡す
             return <Component
-              key={index}
+              key={question.key}
               initialValues={question.data}
               setData={(data) => {
                 handlers.setItem(index, {
@@ -147,6 +147,7 @@ const CreateForm = memo(({
               <Menu.Item onClick={() => {
                 handlers.insert(questions.length, {
                   type: "radio",
+                  key: nanoid(),
                   data: {
                     title: "",
                     questions: [],

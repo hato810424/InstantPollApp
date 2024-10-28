@@ -12,8 +12,26 @@ import * as uuid from "uuid";
 import { Variables } from "./index";
 import { draftTable } from "@/database/drizzle/schema/drafts";
 import { FormComponent } from "@/pages/poll/create/+Page";
+import { nanoid } from "nanoid";
+import { pollTable } from "@/database/drizzle/schema/polls";
 
 const app = new Hono<{ Variables: Variables }>();
+
+const FromComponentZod = z.object({
+  title: z.string(),
+  description: z.string(),
+  author: z.string(),
+  fields: z.array(
+    z.object({
+      type: z.string(),
+      key: z.string(),
+      data: z.object({
+        title: z.string(),
+        questions: z.array(z.any()),
+      })
+    })
+  ),
+});
 
 const handler = app
   .get(
@@ -89,10 +107,10 @@ const handler = app
       }
 
       const result = await c.get("db").select().from(draftTable).where(eq(draftTable.id, id)).get();
-      if (result) {
+      if (result && result.data !== null) {
         return c.json(result.data);
       } else {
-        return c.json({});
+        throw new HTTPException(404);
       }
     }
   )
@@ -100,20 +118,7 @@ const handler = app
     "/api/draft",
     zValidator(
       'json',
-      z.object({
-        title: z.string(),
-        description: z.string(),
-        author: z.string(),
-        fields: z.array(
-          z.object({
-            type: z.string(),
-            data: z.object({
-              title: z.string(),
-              questions: z.array(z.any()),
-            })
-          })
-        ),
-      })
+      FromComponentZod,
     ),
     async (c) => {
       const id = c.get("userData").id;
@@ -136,6 +141,70 @@ const handler = app
       }
 
       return c.json("ok");
+    }
+  )
+  .get(
+    "/api/polls/:id",
+    async (c) => {
+      const pollId = c.req.param("id");
+      const result = await c.get("db").select().from(pollTable).where(eq(pollTable.id, pollId)).get();
+      if (!result) {
+        throw new HTTPException(404);
+      } else {
+        return c.json(result);
+      }
+    }
+  )
+  .post(
+    "/api/polls",
+    zValidator(
+      'json',
+      FromComponentZod,
+    ),
+    async (c) => {
+      const id = c.get("userData").id;
+      if (c.get("userData").is_moderator !== true || !id) {
+        throw new HTTPException(403);
+      }
+
+      const reqData = c.req.valid("json") as FormComponent;
+      const data = {
+        ...reqData,
+        fields: reqData.fields.map(field => {
+          const key = nanoid();
+          return {
+            ...field,
+            data: {
+              ...field.data,
+              key: key,
+              questions: field.data.questions.map(question => ({
+                ...question,
+                key: nanoid(),
+              }))
+            }
+          }
+        })
+      }
+
+      // すべてのPollIdを取得
+      const polls = await c.get("db").select({
+        id: pollTable.id
+      }).from(pollTable).all();
+      
+      // 被りがないまでnanoIdを生成する
+      let newPollId = nanoid();
+      do
+        newPollId = nanoid();
+      while (polls.filter(poll => poll.id === newPollId).length !== 0);
+
+      // インサート発行
+      const created = await c.get("db").insert(pollTable).values({
+        id: newPollId,
+        author_id: id,
+        data: data,
+      }).returning().get();
+
+      return c.json(created, 201);
     }
   )
 
