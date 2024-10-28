@@ -147,6 +147,18 @@ const handler = app
       return c.json("ok");
     }
   )
+  .delete(
+    "/api/draft",
+    async (c) => {
+      const id = c.get("userData").id;
+      if (c.get("userData").is_moderator !== true || !id) {
+        throw new HTTPException(403);
+      }
+      
+      await c.get("db").delete(draftTable).where(eq(draftTable.id, id)).limit(1).execute();
+      return c.json("ok");
+    }
+  )
   .get(
     "/api/polls",
     async (c) => {

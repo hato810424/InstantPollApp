@@ -11,6 +11,7 @@ import { CreateRadioButton, RadioButtonProps } from "./CreateRadioButton";
 import { useListState } from "@mantine/hooks";
 import { useForm } from "@mantine/form";
 import { nanoid } from "nanoid";
+import Swal from "sweetalert2";
 
 export default function Page() {
   const { dehydratedState } = useData<Data>();
@@ -46,7 +47,7 @@ export default function Page() {
     <Container size={"md"}>
       <h1>Pollを作成</h1>
       <p>質問を作成しよう</p>
-      {draft && <CreateForm initData={draft} />}
+      <CreateForm initData={draftData} />
     </Container>
   );
 }
@@ -193,7 +194,25 @@ const CreateForm = memo(({
             </Tooltip> */}
           </Menu.Dropdown>
         </Menu>
-        <Group justify="flex-end" mt="md">
+        <Group justify="space-between" mt="md">
+          <Button onClick={() => {
+            Swal.fire({
+              title: "本当に下書きを削除しますか？",
+              icon: "question",
+              showCancelButton: true,
+              focusCancel: true,
+              cancelButtonText: "キャンセル",
+              confirmButtonColor: "#fa5252",
+              confirmButtonText: "削除する",
+            }).then(val => {
+              if (val.isConfirmed) {
+                rpc.api.draft.$delete().then(res => {
+                  queryClient.setQueryData(["/api/draft"], () => ({}));
+                  navigate("/");
+                });
+              }
+            })
+          }} color="red">下書きを削除</Button>
           <Button type="submit">プレビューへ</Button>
         </Group>
       </Stack>
