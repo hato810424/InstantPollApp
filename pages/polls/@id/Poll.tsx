@@ -1,17 +1,29 @@
 import { normalWeight } from "../../../utils/styles";
-import { Button, Container, Fieldset, Group, Radio, Stack } from "@mantine/core";
+import { Button, Container, Group, Stack } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useCallback } from "react";
 import { PollItem } from "@/database/drizzle/schema/polls";
 import { PollRadioButton, PollRadioButtonData, PollRadioButtonProps } from "./PollComponents";
+import { FormComponentUnionType, QuestionTypes } from "@/pages/poll/create/+Page";
 
-type FormData = {
-  [key: string]: PollRadioButtonData
+export type FormAnswerData = PollRadioButtonData;
+export type FormData = {
+  [key: string]: FormAnswerData
 };
+
+export const transformFields = (fields: FormComponentUnionType[]) => fields.reduce((result: FormData, fields) => {
+  result[fields.key] = {
+    key: fields.key,
+    value: undefined,
+  };
+  return result;
+}, {});
 
 const questionComponents = {
   radio: (props: PollRadioButtonProps) => <PollRadioButton {...props} />,
-} as const;
+} as const satisfies {
+  [K in QuestionTypes]: any
+};
 
 export const Poll = ({
   poll,
@@ -20,17 +32,11 @@ export const Poll = ({
   poll: PollItem,
   preview?: boolean
 }) => {
-  const transformFields = useCallback(() => poll.data.fields.reduce((result: FormData, fields) => {
-    result[fields.key] = {
-      key: fields.key,
-      value: undefined,
-    };
-    return result;
-  }, {}), [poll])();
+  const fields = useCallback(transformFields, [poll])(poll.data.fields);
 
   const form = useForm({
     mode: 'uncontrolled',
-    initialValues: transformFields,
+    initialValues: fields,
   });
 
   return (

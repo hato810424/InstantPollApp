@@ -47,6 +47,8 @@ export const questionComponents = {
   radio: (props: RadioButtonProps) => <CreateRadioButton {...props} />,
 } as const;
 
+export type QuestionTypes = keyof typeof questionComponents;
+
 type ComponentProps<T> = T extends React.FC<infer P> ? P : never;
 export type FormComponentData<T extends keyof typeof questionComponents> = {
   type: T;
