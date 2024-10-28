@@ -121,9 +121,9 @@ export const Poll = ({
               />;
             })}
           </Stack>
-          <Group justify="flex-end" mt="md">
+          {!preview && <Group justify="flex-end" mt="md">
             <Button type="submit">送信する</Button>
-          </Group>
+          </Group>}
         </Stack>
       </form>
     </Container>
