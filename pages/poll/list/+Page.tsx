@@ -61,9 +61,7 @@ export default function Page() {
         <Center>
           <Button onClick={() => {
             const url = new URL("/polls/" + poll.poll_id, location.origin);
-    
-            console.log(url);
-        
+
             withReactContent(Swal).fire({
               title: <QRCodeToast url={url} />,
               width: "60%",

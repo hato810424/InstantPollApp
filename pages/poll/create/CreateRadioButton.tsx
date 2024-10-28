@@ -85,7 +85,6 @@ export const CreateRadioButton = memo(({
         </Grid>
 
         <Button size="xs" onClick={() => {
-          console.log("aaaa");
           form.insertListItem(
             'questions',
             {
