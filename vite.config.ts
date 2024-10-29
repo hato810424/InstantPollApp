@@ -24,7 +24,15 @@ export default defineConfig({
 
       injectClientScript: false,
     }),
-    macaronVitePlugin(),
     react(),
+    macaronVitePlugin(),
   ],
+  ssr: {
+    noExternal: [
+      "@mantine/core",
+      "@mantine/form",
+      "@mantine/hooks",
+      "@mantine/charts",
+    ]
+  }
 });
