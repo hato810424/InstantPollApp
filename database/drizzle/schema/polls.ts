@@ -7,7 +7,7 @@ export const pollTable = sqliteTable('polls', {
   author_id: text().notNull(),
   data: text({ mode: "json" }).notNull().$type<FormComponent>(),
   // https://orm.drizzle.team/docs/guides/timestamp-default-value
-  created_at: integer().notNull().default(sql`(unixepoch())`),
+  created_at: integer().notNull().default(sql`(unixepoch() * 1000)`),
   closed_at: integer(),
 })
 

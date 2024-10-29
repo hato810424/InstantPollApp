@@ -65,6 +65,9 @@ importers:
       drizzle-orm:
         specifier: ^0.35.0
         version: 0.35.2(@types/better-sqlite3@7.6.11)(@types/react@18.3.11)(better-sqlite3@11.4.0)(react@18.3.1)
+      es-toolkit:
+        specifier: ^1.26.1
+        version: 1.26.1
       hono:
         specifier: ^4.6.5
         version: 4.6.5
@@ -1771,6 +1774,9 @@ packages:
 
   es-module-lexer@1.5.4:
     resolution: {integrity: sha512-MVNK56NiMrOwitFB7cqDwq0CQutbw+0BvLshJSse0MUNU+y1FC3bUS/AQg7oUng+/wKrrki7JfmwtVHkVfPLlw==}
+
+  es-toolkit@1.26.1:
+    resolution: {integrity: sha512-E3H14lHWk8JpupVpIRA1gfNF4r953abHTFW+X1Rp7zl7eG37ksuthfEA4FinyVF/Y807vzzfQS1nubeZk2LTVA==}
 
   esbuild-android-64@0.14.54:
     resolution: {integrity: sha512-Tz2++Aqqz0rJ7kYBfz+iqyE3QMycD4vk7LBRyWaAVFgFtQ/O8EJOnVmTOiDWYZ/uYzB4kvP+bqejYdVKzE5lAQ==}
@@ -4303,6 +4309,8 @@ snapshots:
       once: 1.4.0
 
   es-module-lexer@1.5.4: {}
+
+  es-toolkit@1.26.1: {}
 
   esbuild-android-64@0.14.54:
     optional: true

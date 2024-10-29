@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Center, Container, Table, Text, Tooltip } from "@mantine/core";
+import { ActionIcon, Container, Table, Tooltip } from "@mantine/core";
 import { Data } from "./+data.shared";
 import { useData } from "vike-react/useData";
 import { useHydrate } from "@/utils/ssr/create-dehydrated-state";
@@ -34,6 +34,19 @@ const QRCodeToast = ({
   )
 }
 
+function formatTimestamp(timestamp: number): string {
+  const date = new Date(timestamp);
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');  // 月は0始まりなので+1
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+
+  return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+}
+
 export default function Page() {
   const { dehydratedState } = useData<Data>();
   useHydrate(dehydratedState);
@@ -62,8 +75,16 @@ export default function Page() {
         <small>{poll.poll.description}</small>
       </Table.Td>
       <Table.Td>
+        <small>作成時刻: {formatTimestamp(poll.created_at)}</small><br/>
+        {poll.is_ended && poll.closed_at && (
+          <small>締切時刻: {formatTimestamp(poll.closed_at)}</small>
+        )}
+      </Table.Td>
+      <Table.Td>
         {poll.poll.author}<br/>
-        <small>({poll.author_id})</small>
+        <small style={{ 
+          fontSize: "70%"
+        }}>({poll.author_id})</small>
       </Table.Td>
       <Table.Td>{poll.answer_count}</Table.Td>
       <Table.Td><a href={"/polls/" + poll.poll_id + "/detail"}>詳細</a></Table.Td>
@@ -92,6 +113,7 @@ export default function Page() {
       <Table striped>
         <Table.Thead>
           <Table.Tr>
+            <Table.Th></Table.Th>
             <Table.Th></Table.Th>
             <Table.Th>作成者</Table.Th>
             <Table.Th>回答数</Table.Th>

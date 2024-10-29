@@ -2,9 +2,18 @@ import { eq } from "drizzle-orm";
 import { type dbSqlite } from "../db";
 import { answerTable } from "../schema/answers";
 import { pollTable } from "../schema/polls";
+import { omit } from "es-toolkit";
 
 export async function getPolls(db: ReturnType<typeof dbSqlite>) {
-  const polls = await db.select().from(pollTable).execute();
+  const polls = (await db.select().from(pollTable).execute()).map(poll => {
+    const closed_at = poll.closed_at ?? (Date.now() + 1);
+    return {
+      ...poll,
+      is_ended: (Date.now() - closed_at) > 0,
+    }
+  });
+  
+  
   const answers = await db.select({
     poll_id: answerTable.poll_id,
   }).from(answerTable).execute();
@@ -15,13 +24,9 @@ export async function getPolls(db: ReturnType<typeof dbSqlite>) {
   }, {});
 
   return polls.map(poll => ({
+    ...omit(poll, ["id", "data"]),
     poll_id: poll.id,
-    author_id: poll.author_id,
-    poll: {
-      title: poll.data.title,
-      description: poll.data.description,
-      author: poll.data.author,
-    },
+    poll: omit(poll.data, ["fields"]),
     answer_count: pollCount[poll.id] ? pollCount[poll.id] : 0,
   }))
 }
