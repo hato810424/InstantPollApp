@@ -2,7 +2,7 @@ import { Button, Container, Group, Space } from "@mantine/core";
 import { Data } from "./+data.shared";
 import { useData } from "vike-react/useData";
 import { useHydrate } from "@/utils/ssr/create-dehydrated-state";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { AppType } from "@/server/api";
 import { hc } from "hono/client";
 import { navigate } from "vike/client/router";
@@ -15,6 +15,7 @@ export default function Page() {
   const { dehydratedState } = useData<Data>();
   useHydrate(dehydratedState);
 
+  const queryClient = useQueryClient();
   const rpc = hc<AppType>("/");
   const { data: user } = useSuspenseQuery({
     queryKey: ['/api/@me'],
@@ -65,7 +66,10 @@ export default function Page() {
   
               if (res.ok) {
                 const data = await res.json();
-                navigate("/polls/" + data.id);
+                queryClient.invalidateQueries({
+                  queryKey: ['/api/polls'],
+                });
+                navigate("/poll/list");
               }
             }
           })
