@@ -42,7 +42,7 @@ export default function Page() {
     return;
   }
 
-  const [page, setPage] = useState<"initial" | "poll" | "success" | "closed">("poll");
+  const [page, setPage] = useState<"initial" | "poll" | "success" | "closed">(poll.is_ended ? "closed" : "initial");
   if (page === "closed") {
     return <>
       <Container size="md">

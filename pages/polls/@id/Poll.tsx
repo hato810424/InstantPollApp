@@ -8,7 +8,6 @@ import { FormComponentUnionType, QuestionTypes } from "@/pages/poll/create/+Page
 import { hc } from "hono/client";
 import { AppType } from "@/server/api";
 import Swal from "sweetalert2";
-import { css } from "@compiled/react";
 import withReactContent from "sweetalert2-react-content";
 import { useQueryClient } from "@tanstack/react-query";
 
