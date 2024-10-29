@@ -35,6 +35,8 @@ export default function Page() {
     id: nanoid(),
     author_id: user.id ?? "",
     data: draft,
+    created_at: Date.now(),
+    closed_at: null,
   } satisfies PollItem
 
   return <>
