@@ -1,7 +1,6 @@
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import vike from "vike/plugin";
-import { compiled } from "vite-plugin-compiled-react";
 import devServer from "@hono/vite-dev-server";
 import react from "@vitejs/plugin-react";
 
@@ -9,9 +8,6 @@ export default defineConfig({
   plugins: [
     tsconfigPaths(),
     vike({}),
-    compiled({
-      extract: true,
-    }),
     devServer({
       entry: "./server/index.ts",
 
@@ -27,6 +23,10 @@ export default defineConfig({
 
       injectClientScript: false,
     }),
-    react({}),
+    react({
+      babel: {
+        plugins: ["@compiled/babel-plugin"],
+      }
+    }),
   ],
 });

@@ -22,7 +22,7 @@
       "vike-react"
     ],
     "jsx": "preserve",
-    "jsxImportSource": "react",
+    "jsxImportSource": "@compiled/react",
     "paths": {
       "@/*": ["./*"]
     }
