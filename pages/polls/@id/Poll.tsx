@@ -52,7 +52,7 @@ export const Poll = ({
 
   return (
     <Container size="md">
-      <small>{poll.data.author}によって作成された質問です</small>
+      <small>「{poll.data.author}」によって作成された質問です</small>
       {preview ? (
         <h1 css={normalWeight}>「{poll.data.title}」のプレビュー</h1>
       ) : (
