@@ -247,12 +247,8 @@ const handler = app
       }
       
       const pollId = c.req.param("id");
-      const result = await getDetail(c.get("db"), pollId)
-      if (!result) {
-        throw new HTTPException(404);
-      } else {
-        return c.json(result);
-      }
+      const result = await getDetail(c.get("db"), pollId);
+      return c.json(result);
     }
   )
   // Polls/:id/close (Admin)
