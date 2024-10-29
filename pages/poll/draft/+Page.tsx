@@ -9,6 +9,7 @@ import { navigate } from "vike/client/router";
 import { Poll } from "@/pages/polls/@id/Poll";
 import { PollItem } from "@/database/drizzle/schema/polls";
 import { nanoid } from "nanoid";
+import Swal from "sweetalert2";
 
 export default function Page() {
   const { dehydratedState } = useData<Data>();
@@ -47,18 +48,27 @@ export default function Page() {
         <Button onClick={() => {
           navigate("/poll/create")
         }}>戻る</Button>
-        <Button color="red" onClick={async () => {
-          const result = confirm("公開しますか？");
-          if (result) {
-            const res = await rpc.api.polls.$post({
-              json: draft
-            });
-
-            if (res.ok) {
-              const data = await res.json();
-              navigate("/polls/" + data.id);
+        <Button color="green" onClick={async () => {
+          Swal.fire({
+            title: "公開しますか？",
+            icon: "question",
+            showCancelButton: true,
+            focusCancel: true,
+            cancelButtonText: "キャンセル",
+            confirmButtonColor: "#40c057",
+            confirmButtonText: "公開する",
+          }).then(async (val) => {
+            if (val.isConfirmed) {
+              const res = await rpc.api.polls.$post({
+                json: draft
+              });
+  
+              if (res.ok) {
+                const data = await res.json();
+                navigate("/polls/" + data.id);
+              }
             }
-          }
+          })
         }}>公開</Button>
       </Group>
     </Container>
