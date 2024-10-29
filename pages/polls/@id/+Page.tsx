@@ -114,11 +114,12 @@ export const NameChange = ({
   })
 
   const [putting, setPutting] = useState(false);
+  const signature = user.username !== null;
   const form = useForm({
     mode: "controlled",
     initialValues: {
       name: user.username ?? "",
-      signature: false,
+      signature: signature,
     },
 
     validate: (values) => ({
