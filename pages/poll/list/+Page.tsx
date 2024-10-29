@@ -23,7 +23,7 @@ const QRCodeToast = ({
         size={256}
       />
       <p css={css({
-        fontSize: "1.5rem",
+        fontSize: "1.3rem",
       })}>{url.toString()}</p>
     </div>
   )
@@ -63,8 +63,9 @@ export default function Page() {
             const url = new URL("/polls/" + poll.poll_id, location.origin);
 
             withReactContent(Swal).fire({
-              title: <QRCodeToast url={url} />,
-              width: "60%",
+              title: <>「{poll.poll.title}」へのリンク</>,
+              html: <QRCodeToast url={url} />,
+              width: "70%",
               confirmButtonText: "閉じる",
             });
           }}>QRコード</Button>
