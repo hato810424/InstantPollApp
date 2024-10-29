@@ -3,6 +3,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import vike from "vike/plugin";
 import devServer from "@hono/vite-dev-server";
 import react from "@vitejs/plugin-react";
+import { macaronVitePlugin } from '@macaron-css/vite';
 
 export default defineConfig({
   plugins: [
@@ -23,10 +24,7 @@ export default defineConfig({
 
       injectClientScript: false,
     }),
-    react({
-      babel: {
-        plugins: ["@compiled/babel-plugin"],
-      }
-    }),
+    macaronVitePlugin(),
+    react(),
   ],
 });

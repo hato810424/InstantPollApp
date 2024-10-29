@@ -7,7 +7,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { useHydrate } from "../../utils/ssr/create-dehydrated-state.js";
 import { NameChange } from "../polls/@id/+Page.jsx";
 import { Container, Stack } from "@mantine/core";
-import { css } from "@compiled/react";
+import { normalWeight } from "@/utils/styles.js";
 
 export default function Page() {
   const { dehydratedState } = useData<Data>();
@@ -23,9 +23,7 @@ export default function Page() {
 
   return (
     <Container size={"xs"} mt={"lg"} p={"md"}>
-      <h1 css={css({
-        fontWeight: "normal"
-      })}>ホーム画面</h1>
+      <h1 className={normalWeight}>ホーム画面</h1>
       <NameChange next={() => {}} />
         
       <Stack>

@@ -12,7 +12,7 @@ import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { usePageContext } from "vike-react/usePageContext";
 import { Poll } from "./Poll";
 import { navigate } from "vike/client/router";
-import { normalWeight } from "../../../utils/styles";
+import { normalWeight } from "@/utils/styles";
 
 export default function Page() {
   const { routeParams } = usePageContext();
@@ -48,7 +48,7 @@ export default function Page() {
       <Container size="md">
         <Stack>
           <div>
-            <h1 css={normalWeight}>「{poll.data.title}」への回答の受け付けは終了しました</h1>
+            <h1 className={normalWeight}>「{poll.data.title}」への回答の受け付けは終了しました</h1>
           </div>
           <Fieldset legend="アーカイブ">
             <Poll poll={poll} preview={true} disabled={true} />
@@ -80,7 +80,7 @@ export default function Page() {
   } if (page === "success") {
     return <>
       <Container size="md">
-        <h1 css={normalWeight}>回答済み！</h1>
+        <h1 className={normalWeight}>回答済み！</h1>
         <p>
           「{poll.data.title}」へご回答ありがとうございました！
         </p>
@@ -99,7 +99,7 @@ const InitialScreen = ({
 }) => {
   return (
     <Container size={"xs"} mt={"lg"} p={"md"}>
-      <h1 css={normalWeight}>答える前に..</h1>
+      <h1 className={normalWeight}>答える前に..</h1>
       <p>あなたの名前を伝えませんか？</p>
       <NameChange next={next} />
     </Container>

@@ -8,7 +8,6 @@ import { Vote } from "lucide-react";
 import { AppShell, Center, MantineProvider } from "@mantine/core";
 import theme from "./theme";
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { css } from "@compiled/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient({
@@ -34,8 +33,7 @@ export default function LayoutDefault({ children }: { children: React.ReactNode 
             padding="md"
           >
             <AppShell.Main>
-              <header css={css({
-              })}>
+              <header>
                 <Center m={"md"}>
                   <Vote size="20" />インスタントアンケートアプリ
                 </Center>

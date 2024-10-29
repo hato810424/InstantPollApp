@@ -1,5 +1,5 @@
-import { css } from "@compiled/react";
+import { style } from "@macaron-css/core";
 
-export const normalWeight = css({
+export const normalWeight = style({
   fontWeight: "normal",
 });

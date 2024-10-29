@@ -1,4 +1,3 @@
-import { normalWeight } from "../../../utils/styles";
 import { Button, Container, Group, Stack } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useCallback } from "react";
@@ -10,6 +9,7 @@ import { AppType } from "@/server/api";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { useQueryClient } from "@tanstack/react-query";
+import { normalWeight } from "@/utils/styles";
 
 export type FormAnswerData = PollRadioButtonData;
 export type FormData = {
@@ -54,9 +54,9 @@ export const Poll = ({
     <Container size="md">
       <small>「{poll.data.author}」によって作成された質問です</small>
       {preview ? (
-        <h1 css={normalWeight}>「{poll.data.title}」のプレビュー</h1>
+        <h1 className={normalWeight}>「{poll.data.title}」のプレビュー</h1>
       ) : (
-        <h1 css={normalWeight}>「{poll.data.title}」</h1>
+        <h1 className={normalWeight}>「{poll.data.title}」</h1>
       )}
       <p style={{ 
         whiteSpace: "pre-wrap",

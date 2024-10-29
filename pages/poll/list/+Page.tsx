@@ -9,7 +9,7 @@ import { navigate } from "vike/client/router";
 import { QRCodeSVG } from 'qrcode.react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import { css } from "@compiled/react";
+import { style } from "@macaron-css/core";
 
 const QRCodeToast = ({
   url
@@ -22,7 +22,7 @@ const QRCodeToast = ({
         value={url.toString()}
         size={256}
       />
-      <p css={css({
+      <p className={style({
         fontSize: "1.3rem",
       })}>{url.toString()}</p>
     </div>
