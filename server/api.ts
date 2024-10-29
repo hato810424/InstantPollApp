@@ -4,7 +4,7 @@ import z from "zod";
 import { HTTPException } from "hono/http-exception";
 import { deleteCookie, getCookie, setCookie } from "hono/cookie";
 
-import { userTable } from "../database/drizzle/schema/users";
+import { selectUserTable, userTable } from "../database/drizzle/schema/users";
 import { and, eq } from "drizzle-orm";
 
 import * as uuid from "uuid";
@@ -15,9 +15,10 @@ import { FormComponent } from "@/pages/poll/create/+Page";
 import { nanoid } from "nanoid";
 import { pollTable } from "@/database/drizzle/schema/polls";
 import { getPoll, getPolls } from "@/database/drizzle/queries/polls";
-import { FormAnswerData, FormData } from "@/pages/polls/@id/Poll";
+import { FormAnswerData } from "@/pages/polls/@id/Poll";
 import { answerTable } from "@/database/drizzle/schema/answers";
 import { getDetail } from "@/database/drizzle/queries/answers";
+import { getUser } from "@/database/drizzle/queries/users";
 
 const app = new Hono<{ Variables: Variables }>();
 
@@ -43,7 +44,7 @@ const handler = app
     async (c) => {
       const userId = getCookie(c, "voteUserId");
       if (userId) {
-        const result = await c.get("db").select().from(userTable).where(eq(userTable.id, userId)).get();
+        const result = await getUser(c.get("db"), userId);
     
         if (result) {
           return c.json(result);
@@ -67,7 +68,7 @@ const handler = app
       const userId = getCookie(c, "voteUserId");
 
       if (userId) {
-        const result = await c.get("db").select().from(userTable).where(eq(userTable.id, userId)).get();
+        const result = await getUser(c.get("db"), userId);
         if (result) {
           const username = c.req.valid("form").username ?? null;
           await c.get("db").update(userTable).set({
@@ -88,17 +89,14 @@ const handler = app
       
       const id = uuid.v7();
       
+      const hostname = new URL(c.req.url).hostname;
       const insertResult = await c.get("db").insert(userTable).values({
         id: id,
         username: c.req.valid("form").username,
-      }).returning().get();
+        hostname: hostname,
+      }).returning(selectUserTable).get();
 
-      c.set("userData", {
-        id: id,
-        username: c.req.valid("form").username
-      })
       setCookie(c, "voteUserId", id);
-
       return c.json(insertResult);
     }
   )
@@ -307,6 +305,9 @@ const handler = app
           throw new HTTPException(400);
         }
       }
+
+      // クッキー有効期限延長
+      setCookie(c, "voteUserId", id);
 
       const answerResult = await c.get("db").select().from(answerTable).where(and(
         eq(answerTable.user_id, id),

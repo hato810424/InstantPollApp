@@ -4,11 +4,11 @@ import { Hono } from "hono";
 import { poweredBy } from "hono/powered-by";
 import { deleteCookie, getCookie } from "hono/cookie";
 
-import { dbSqlite } from "../database/drizzle/db";
-import { UserItem, userTable } from "../database/drizzle/schema/users";
-import { eq } from "drizzle-orm";
+import { dbSqlite } from "@/database/drizzle/db";
+import { UserItem } from "@/database/drizzle/schema/users";
 import apiRoute from "./api";
 import { vike } from "vike-node/hono";
+import { getUser } from "@/database/drizzle/queries/users";
 
 export type Variables = {
   db: ReturnType<typeof dbSqlite>,
@@ -37,7 +37,7 @@ app.use(async (c, next) => {
   })
   
   if (userId) {
-    const result = await c.get("db").select().from(userTable).where(eq(userTable.id, userId)).get();
+    const result = await getUser(c.get("db"), userId);
 
     if (result) {
       c.set("userData", result);
