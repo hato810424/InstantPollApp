@@ -39,6 +39,7 @@ const FromComponentZod = z.object({
 });
 
 const handler = app
+  // @me
   .get(
     "/api/@me",
     async (c) => {
@@ -100,6 +101,7 @@ const handler = app
       return c.json(insertResult);
     }
   )
+  // Draft (Admin)
   .get(
     "/api/draft",
     async (c) => {
@@ -157,6 +159,7 @@ const handler = app
       return c.json("ok");
     }
   )
+  // Polls (Admin)
   .get(
     "/api/polls",
     async (c) => {
@@ -221,6 +224,7 @@ const handler = app
       return c.json(created, 201);
     }
   )
+  // Polls/:id
   .get(
     "/api/polls/:id",
     async (c) => {
@@ -233,6 +237,7 @@ const handler = app
       }
     }
   )
+  // Polls/:id/detail (Admin)
   .get(
     "/api/polls/:id/detail",
     async (c) => {
@@ -250,6 +255,7 @@ const handler = app
       }
     }
   )
+  // Polls/:id/answer
   .post(
     "/api/polls/:id/answer",
     zValidator(
