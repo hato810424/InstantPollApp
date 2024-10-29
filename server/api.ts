@@ -255,6 +255,32 @@ const handler = app
       }
     }
   )
+  .post(
+    "/api/polls/:id/close",
+    async (c) => {
+      const id = c.get("userData").id;
+      if (c.get("userData").is_moderator !== true || !id) {
+        throw new HTTPException(403);
+      }
+      
+      const pollId = c.req.param("id");
+      const result = await getPoll(c.get("db"), pollId)
+      if (!result) {
+        throw new HTTPException(404);
+      } else {
+        const closed_at = Date.now();
+
+        await c.get("db").update(pollTable).set({
+          closed_at: closed_at,
+        }).where(eq(pollTable.id, pollId)).execute();
+
+        return c.json({
+          closed_at: closed_at,
+          is_ended: true,
+        });
+      }
+    }
+  )
   // Polls/:id/answer
   .post(
     "/api/polls/:id/answer",

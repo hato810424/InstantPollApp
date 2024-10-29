@@ -8,7 +8,6 @@ import { FormComponentUnionType, QuestionTypes } from "@/pages/poll/create/+Page
 import { hc } from "hono/client";
 import { AppType } from "@/server/api";
 import Swal from "sweetalert2";
-import { useQueryClient } from "@tanstack/react-query";
 
 export type FormAnswerData = PollRadioButtonData;
 export type FormData = {
@@ -32,10 +31,12 @@ const questionComponents = {
 export const Poll = ({
   poll,
   preview = false,
+  disabled = false,
   success = () => {},
 }: {
   poll: PollItem,
   preview?: boolean,
+  disabled?: boolean,
   success?: () => void,
 }) => {
   const rpc = hc<AppType>("/");
@@ -111,6 +112,7 @@ export const Poll = ({
                 key={index}
                 componentData={question}
                 data={form.getValues()[question.key]}
+                disabled={disabled}
                 setData={(data) => {
                   form.setValues((values) => ({
                     ...values,

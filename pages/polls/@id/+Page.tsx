@@ -5,7 +5,7 @@ import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useHydrate } from "../../../utils/ssr/create-dehydrated-state";
 import { hc, InferResponseType } from "hono/client";
 import { AppType } from "../../../server/api";
-import { Alert, Center, Checkbox, Container } from "@mantine/core";
+import { Accordion, Alert, Center, Checkbox, Container, Divider, Fieldset, Stack, Text } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { Button, Group, TextInput } from "@mantine/core";
 import { useAutoAnimate } from '@formkit/auto-animate/react'
@@ -42,9 +42,21 @@ export default function Page() {
     return;
   }
 
-  const [page, setPage] = useState<"initial" | "poll" | "success">("initial");
-
-  if (page === "initial") {
+  const [page, setPage] = useState<"initial" | "poll" | "success" | "closed">(poll.is_ended ? "closed" : "initial");
+  if (page === "closed") {
+    return <>
+      <Container size="md">
+        <Stack>
+          <div>
+            <h1 css={normalWeight}>「{poll.data.title}」への回答の受け付けは終了しました</h1>
+          </div>
+          <Fieldset legend="アーカイブ">
+            <Poll poll={poll} preview={true} disabled={true} />
+          </Fieldset>
+        </Stack>
+      </Container>
+    </>
+  } if (page === "initial") {
     return <InitialScreen next={() => setPage("poll")} />;
   } if (page === "poll") {
     return <>

@@ -27,5 +27,14 @@ export async function getPolls(db: ReturnType<typeof dbSqlite>) {
 }
 
 export async function getPoll(db: ReturnType<typeof dbSqlite>, pollId: string) {
-  return await db.select().from(pollTable).where(eq(pollTable.id, pollId)).get();
+  const poll = await db.select().from(pollTable).where(eq(pollTable.id, pollId)).get();
+
+  if (!poll) return undefined;
+
+  const closed_at = poll.closed_at ?? (Date.now() + 1);
+
+  return {
+    ...poll,
+    is_ended: (Date.now() - closed_at) > 0
+  }
 }

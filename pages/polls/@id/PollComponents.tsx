@@ -11,6 +11,7 @@ export type PollRadioButtonProps = {
   data: PollRadioButtonData,
   setData: (data: PollRadioButtonData) => void,
   error?: React.ReactNode,
+  disabled?: boolean,
 }
 
 export const PollRadioButton = ({
@@ -18,6 +19,7 @@ export const PollRadioButton = ({
   data,
   setData,
   error,
+  disabled = false,
 }: PollRadioButtonProps) => {
   return (
     <Fieldset>
@@ -34,6 +36,7 @@ export const PollRadioButton = ({
               key={index}
               value={button.key}
               label={button.label}
+              disabled={disabled}
               onChange={(e) => {
                 setData({
                   ...data,
