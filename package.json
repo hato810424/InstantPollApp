@@ -4,6 +4,7 @@
     "build": "vite build",
     "start": "cross-env NODE_ENV=production tsx ./server/index.prod.ts",
     "ngrok": "tsx --env-file=.env ./ngrok.ts",
+    "tsc": "tsc --noEmit",
     "drizzle:generate": "drizzle-kit generate",
     "drizzle:migrate": "drizzle-kit migrate",
     "drizzle:studio": "drizzle-kit studio"
