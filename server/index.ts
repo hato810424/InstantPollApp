@@ -12,7 +12,7 @@ import { getUser } from "@/database/drizzle/queries/users";
 
 export type Variables = {
   db: ReturnType<typeof dbSqlite>,
-  userData: Partial<UserItem> | UserItem,
+  userData: typeof userTableDefault,
 };
 
 const app = new Hono<{ Variables: Variables }>()

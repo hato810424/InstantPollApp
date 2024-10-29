@@ -13,7 +13,11 @@ export const selectUserTable = {
   is_moderator: userTable.is_moderator,
 }
 
-export const userTableDefault = {
+export const userTableDefault: Partial<{
+  id: string,
+  username: string | null,
+  is_moderator: boolean,
+}> = {
   id: undefined,
   username: undefined,
   is_moderator: false,
