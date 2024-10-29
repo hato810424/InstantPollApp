@@ -63,10 +63,10 @@ export const Poll = ({
 
         data.forEach(value => {
           if (!(value.value)) {
-            form.setErrors({
-              ...form.errors,
+            form.setErrors((errors) => ({
+              ...errors,
               [value.key]: "入力してください"
-            });
+            }));
             isError = true;
           } else {
             form.clearFieldError(value.key);
