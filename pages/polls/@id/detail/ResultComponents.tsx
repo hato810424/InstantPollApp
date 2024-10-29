@@ -47,6 +47,9 @@ export const RadioButtonResult = ({
           data={data}
           dataKey="label"
           orientation="vertical"
+          xAxisProps={{ 
+            tickFormatter: (v, i) => Math.round(v).toString()
+          }}
           barProps={{ radius: 10 }}
           series={[{ name: 'count', color: 'blue.6' }]}
           tooltipAnimationDuration={50}
