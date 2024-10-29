@@ -6,7 +6,7 @@ import { BarChart, ChartTooltipProps } from "@mantine/charts";
 export type RadioButtonResultProps = {
   content: FormComponentData<"radio">,
   users: Users,
-  answers: AnswersType[""]
+  answers?: AnswersType[""]
 }
 
 function ChartTooltip({ label, payload }: ChartTooltipProps) {
@@ -34,7 +34,7 @@ export const RadioButtonResult = ({
   const data = content.data.questions.map(question => {
     return {
       label: question.label,
-      count: (answers[question.key] ?? []).length
+      count: ((answers && answers[question.key]) ?? []).length
     }
   })
 
@@ -54,34 +54,36 @@ export const RadioButtonResult = ({
             content: ({ label, payload }) => <ChartTooltip label={label} payload={payload} />,
           }}
         />
-        <Accordion chevronPosition="right" variant="contained">
-          <Accordion.Item value={"list"}>
-            <Accordion.Control>回答者を見る</Accordion.Control>
-            <Accordion.Panel>
-              <Stack>
-                {content.data.questions.map(question => (
-                  <Fieldset key={question.label} legend={`「${question.label}」を選択した人`}>
-                    <List>
-                      {!answers[question.key] || (answers[question.key].length === 0) ? (
-                        <Text m={0}>いませんでした。</Text>
-                      ) : answers[question.key].map(userId => {
-                        if (users[userId] !== undefined) {
-                          return (
-                            <List.Item key={question.key + userId}>{users[userId] === null ? "名前非公開さん" : users[userId]}</List.Item>
-                          )
-                        } else {
-                          return (
-                            <List.Item key={question.key + userId}>名前の取得に失敗しました</List.Item>
-                          )
-                        }
-                      })}
-                    </List>
-                  </Fieldset>
-                ))}
-              </Stack>
-            </Accordion.Panel>
-          </Accordion.Item>
-        </Accordion>
+        {answers && (
+          <Accordion chevronPosition="right" variant="contained">
+            <Accordion.Item value={"list"}>
+              <Accordion.Control>回答者を見る</Accordion.Control>
+              <Accordion.Panel>
+                <Stack>
+                  {content.data.questions.map(question => (
+                    <Fieldset key={question.label} legend={`「${question.label}」を選択した人`}>
+                      <List>
+                        {!answers[question.key] || (answers[question.key].length === 0) ? (
+                          <Text m={0}>いませんでした。</Text>
+                        ) : answers[question.key].map(userId => {
+                          if (users[userId] !== undefined) {
+                            return (
+                              <List.Item key={question.key + userId}>{users[userId] === null ? "名前非公開さん" : users[userId]}</List.Item>
+                            )
+                          } else {
+                            return (
+                              <List.Item key={question.key + userId}>名前の取得に失敗しました</List.Item>
+                            )
+                          }
+                        })}
+                      </List>
+                    </Fieldset>
+                  ))}
+                </Stack>
+              </Accordion.Panel>
+            </Accordion.Item>
+          </Accordion>
+        )}
       </Stack>
     </Fieldset>
   )

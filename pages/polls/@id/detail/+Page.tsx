@@ -7,8 +7,6 @@ import { useData } from "vike-react/useData";
 import { navigate } from "vike/client/router";
 import { Data } from "../+data.shared";
 import { usePageContext } from "vike-react/usePageContext";
-import { transformFields } from "../Poll";
-import { useCallback, useMemo } from "react";
 import { QuestionTypes } from "@/pages/poll/create/+Page";
 import { RadioButtonResult, RadioButtonResultProps } from "./ResultComponents";
 import { render } from "vike/abort";
@@ -80,7 +78,7 @@ export default function Page() {
             key={index}
             content={question}
             users={pollDetail.users}
-            answers={pollDetail.answers[question.key]}
+            answers={pollDetail.answers[question.key] ?? undefined}
           />;
         })}
       </Stack>

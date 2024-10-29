@@ -5,7 +5,7 @@ import { poweredBy } from "hono/powered-by";
 import { deleteCookie, getCookie } from "hono/cookie";
 
 import { dbSqlite } from "@/database/drizzle/db";
-import { UserItem } from "@/database/drizzle/schema/users";
+import { UserItem, userTableDefault } from "@/database/drizzle/schema/users";
 import apiRoute from "./api";
 import { vike } from "vike-node/hono";
 import { getUser } from "@/database/drizzle/queries/users";
@@ -30,11 +30,7 @@ app.use(async (c, next) => {
 app.use(async (c, next) => {
   const userId = getCookie(c, "voteUserId");
   
-  c.set("userData", {
-    id: undefined,
-    username: undefined,
-    is_moderator: false,
-  })
+  c.set("userData", userTableDefault)
   
   if (userId) {
     const result = await getUser(c.get("db"), userId);

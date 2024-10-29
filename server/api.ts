@@ -4,7 +4,7 @@ import z from "zod";
 import { HTTPException } from "hono/http-exception";
 import { deleteCookie, getCookie, setCookie } from "hono/cookie";
 
-import { selectUserTable, userTable } from "../database/drizzle/schema/users";
+import { selectUserTable, userTable, userTableDefault } from "../database/drizzle/schema/users";
 import { and, eq } from "drizzle-orm";
 
 import * as uuid from "uuid";
@@ -53,7 +53,7 @@ const handler = app
         deleteCookie(c, "voteUserId");
       }
 
-      return c.json(c.get("userData"));
+      return c.json(userTableDefault);
     }
   )
   .put(

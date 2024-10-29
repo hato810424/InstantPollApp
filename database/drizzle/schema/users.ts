@@ -13,5 +13,11 @@ export const selectUserTable = {
   is_moderator: userTable.is_moderator,
 }
 
+export const userTableDefault = {
+  id: undefined,
+  username: undefined,
+  is_moderator: false,
+}
+
 export type UserItem = typeof userTable.$inferSelect;
 export type UserInsert = typeof userTable.$inferInsert;
