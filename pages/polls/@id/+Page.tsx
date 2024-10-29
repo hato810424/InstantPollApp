@@ -60,9 +60,9 @@ export default function Page() {
     return <InitialScreen next={() => setPage("poll")} />;
   } if (page === "poll") {
     return <>
-      <Container size="md">
+      <Container size="sm" p={0}>
         <Center>
-          <Group p={"lg"}>
+          <Group pt={"lg"} pb={"lg"}>
             {user.username === null ? (
               <Alert variant="light" color="gray" title="匿名で回答中です">
                 <Button size="xs" onClick={() => setPage("initial")}>やっぱり名前を変更する</Button>
@@ -79,7 +79,7 @@ export default function Page() {
     </>;
   } if (page === "success") {
     return <>
-      <Container size="md">
+      <Container size="sm" p={"sm"}>
         <h1 className={normalWeight}>回答済み！</h1>
         <p>
           「{poll.data.title}」へご回答ありがとうございました！

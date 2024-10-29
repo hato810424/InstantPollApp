@@ -44,7 +44,7 @@ export default function Page() {
   }
 
   return (
-    <Container size={"md"}>
+    <Container size={"sm"} p={0}>
       <h1>Pollを作成</h1>
       <p>質問を作成しよう</p>
       <CreateForm initData={draftData} />

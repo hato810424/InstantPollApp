@@ -44,7 +44,7 @@ export default function Page() {
   return <>
     <Poll preview={true} poll={poll} />
     <Space h="md" />
-    <Container size="md">
+    <Container size={"sm"} p={0}>
       <Group justify="space-between">
         <Button onClick={() => {
           navigate("/poll/create")
