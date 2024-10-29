@@ -1,4 +1,4 @@
-import { Button, Center, Container, Table, Text } from "@mantine/core";
+import { ActionIcon, Button, Center, Container, Table, Text, Tooltip } from "@mantine/core";
 import { Data } from "./+data.shared";
 import { useData } from "vike-react/useData";
 import { useHydrate } from "@/utils/ssr/create-dehydrated-state";
@@ -10,6 +10,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { style } from "@macaron-css/core";
+import { QrCode } from "lucide-react";
 
 const QRCodeToast = ({
   url
@@ -21,6 +22,10 @@ const QRCodeToast = ({
       <QRCodeSVG
         value={url.toString()}
         size={256}
+        style={{
+          maxWidth: "95%",
+          maxHeight: "70%",
+        }}
       />
       <p className={style({
         fontSize: "1.3rem",
@@ -52,14 +57,19 @@ export default function Page() {
 
   const rows = polls.map((poll) => (
     <Table.Tr key={poll.poll_id}>
-      <Table.Td><a href={"/polls/" + poll.poll_id}>{poll.poll.title}</a></Table.Td>
-      <Table.Td>{poll.poll.description}</Table.Td>
-      <Table.Td>{poll.poll.author} ({poll.author_id})</Table.Td>
+      <Table.Td>
+        <a href={"/polls/" + poll.poll_id}>{poll.poll.title}</a><br/>
+        <small>{poll.poll.description}</small>
+      </Table.Td>
+      <Table.Td>
+        {poll.poll.author}<br/>
+        <small>({poll.author_id})</small>
+      </Table.Td>
       <Table.Td>{poll.answer_count}</Table.Td>
       <Table.Td><a href={"/polls/" + poll.poll_id + "/detail"}>詳細</a></Table.Td>
       <Table.Td>
-        <Center>
-          <Button onClick={() => {
+        <Tooltip label="QRコードを表示" openDelay={0}>
+          <ActionIcon size={"lg"} variant="filled" aria-label="QR Codeを表示" onClick={() => {
             const url = new URL("/polls/" + poll.poll_id, location.origin);
 
             withReactContent(Swal).fire({
@@ -68,8 +78,10 @@ export default function Page() {
               width: "70%",
               confirmButtonText: "閉じる",
             });
-          }}>QRコード</Button>
-        </Center>
+          }}>
+            <QrCode size={28} strokeWidth={1.75} />
+          </ActionIcon>
+        </Tooltip>
       </Table.Td>
     </Table.Tr>
   ));
@@ -80,8 +92,7 @@ export default function Page() {
       <Table striped>
         <Table.Thead>
           <Table.Tr>
-            <Table.Th>タイトル</Table.Th>
-            <Table.Th>説明</Table.Th>
+            <Table.Th></Table.Th>
             <Table.Th>作成者</Table.Th>
             <Table.Th>回答数</Table.Th>
             <Table.Th></Table.Th>
