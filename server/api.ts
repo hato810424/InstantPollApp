@@ -255,6 +255,7 @@ const handler = app
       }
     }
   )
+  // Polls/:id/close (Admin)
   .post(
     "/api/polls/:id/close",
     async (c) => {
@@ -301,6 +302,12 @@ const handler = app
       const id = c.get("userData").id;
       if (!id) {
         throw new HTTPException(403);
+      }
+
+      if (result.is_ended) {
+        throw new HTTPException(400, {
+          message: "すでに回答が締め切られています",
+        });
       }
 
       const reqData = c.req.valid("json") as FormAnswerData[];

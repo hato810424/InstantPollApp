@@ -8,6 +8,9 @@ import { FormComponentUnionType, QuestionTypes } from "@/pages/poll/create/+Page
 import { hc } from "hono/client";
 import { AppType } from "@/server/api";
 import Swal from "sweetalert2";
+import { css } from "@compiled/react";
+import withReactContent from "sweetalert2-react-content";
+import { useQueryClient } from "@tanstack/react-query";
 
 export type FormAnswerData = PollRadioButtonData;
 export type FormData = {
@@ -39,6 +42,7 @@ export const Poll = ({
   disabled?: boolean,
   success?: () => void,
 }) => {
+  const queryClient = useQueryClient();
   const rpc = hc<AppType>("/");
   const fields = useCallback(transformFields, [poll])(poll.data.fields);
 
@@ -80,7 +84,7 @@ export const Poll = ({
             id: poll.id,
           },
           json: data,
-        }).then(res => {
+        }).then(async (res) => {
           if (res.ok) {
             success();
 
@@ -89,11 +93,24 @@ export const Poll = ({
               icon: "success"
             });
           } else {
-            Swal.fire({
+            const text = await res.text();
+            const Toast = () => {
+              return (
+                <div>
+                  <p>{res.status} - {res.statusText}</p>
+                  <p style={{ 
+                    whiteSpace: "pre-wrap",
+                  }}>{text}</p>
+                </div>
+              )
+            }
+
+            withReactContent(Swal).fire({
               title: "送信中に何かエラーが発生しました...",
-              text: `${res.status} - ${res.statusText}`,
-              icon: "error"
-            })
+              html: <Toast />,
+              confirmButtonText: "閉じる",
+              icon: "error",
+            });
           }
         })
       })}>
