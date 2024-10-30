@@ -8,7 +8,6 @@ import { hc } from "hono/client";
 import { AppType } from "@/server/api";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import { useQueryClient } from "@tanstack/react-query";
 import { normalWeight } from "@/utils/styles";
 
 export type FormAnswerData = PollRadioButtonData;
@@ -41,7 +40,6 @@ export const Poll = ({
   disabled?: boolean,
   success?: () => void,
 }) => {
-  const queryClient = useQueryClient();
   const rpc = hc<AppType>("/");
   const fields = useCallback(transformFields, [poll])(poll.data.fields);
 
@@ -85,12 +83,20 @@ export const Poll = ({
           json: data,
         }).then(async (res) => {
           if (res.ok) {
+            const data = await res.json();
             success();
 
-            Swal.fire({
-              title: "回答が完了しました！",
-              icon: "success"
-            });
+            if (data.isFirst) {
+              Swal.fire({
+                title: "回答が完了しました！",
+                icon: "success"
+              });
+            } else {
+              Swal.fire({
+                title: "回答を変更しました！",
+                icon: "success"
+              });
+            }
           } else {
             const text = await res.text();
             const Toast = () => {

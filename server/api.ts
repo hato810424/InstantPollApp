@@ -355,14 +355,18 @@ const handler = app
           eq(answerTable.user_id, id),
           eq(answerTable.poll_id, result.id),
         )).execute();
-        return c.json("上書き", 200);
+        return c.json({
+          isFirst: false,
+        }, 200);
       } else {
         await c.get("db").insert(answerTable).values({
           user_id: id,
           poll_id: result.id,
           data: data,
         }).execute();
-        return c.json("新規", 201);
+        return c.json({
+          isFirst: true,
+        }, 201);
       }
     }
   )
