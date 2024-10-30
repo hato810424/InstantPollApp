@@ -47,8 +47,11 @@ export const RadioButtonResult = ({
           data={data}
           dataKey="label"
           orientation="vertical"
-          xAxisProps={{ 
-            tickFormatter: (v, i) => Math.round(v).toString()
+          yAxisProps={{ 
+            allowDecimals: false
+          }}
+          xAxisProps={{
+            allowDecimals: false
           }}
           barProps={{ radius: 10 }}
           series={[{ name: 'count', color: 'blue.6' }]}
