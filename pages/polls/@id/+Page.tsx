@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useData } from "vike-react/useData";
 import { Data } from "./+data.shared";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useHydrate } from "../../../utils/ssr/create-dehydrated-state";
 import { hc, InferResponseType } from "hono/client";
 import { AppType } from "../../../server/api";
-import { Accordion, Alert, Center, Checkbox, Container, Divider, Fieldset, Stack, Text } from "@mantine/core";
+import { Alert, Center, Checkbox, Container, Fieldset, Stack } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { Button, Group, TextInput } from "@mantine/core";
 import { useAutoAnimate } from '@formkit/auto-animate/react'

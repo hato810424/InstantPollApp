@@ -2,7 +2,7 @@ import "@mantine/core/styles.css";
 import '@mantine/charts/styles.css';
 import "./style.css";
 
-import React, { Suspense } from "react";
+import { Suspense } from "react";
 import { Vote } from "lucide-react";
 
 import { AppShell, Center, MantineProvider } from "@mantine/core";

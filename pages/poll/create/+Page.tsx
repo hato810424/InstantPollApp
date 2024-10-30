@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import { memo } from "react";
 import { useData } from "vike-react/useData";
 import { Data } from "./+data.shared";
 import { useHydrate } from "@/utils/ssr/create-dehydrated-state";
