@@ -6,7 +6,7 @@ import { hc } from "hono/client";
 import { AppType } from "@/server/api";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { navigate } from 'vike/client/router'
-import { Button, Container, Divider, Group, Menu, Stack, Textarea, TextInput, Tooltip } from "@mantine/core";
+import { Button, Center, Container, Divider, Group, Menu, Stack, Textarea, TextInput, Tooltip } from "@mantine/core";
 import { CreateRadioButton, RadioButtonProps } from "./CreateRadioButton";
 import { useListState } from "@mantine/hooks";
 import { useForm } from "@mantine/form";
@@ -147,54 +147,56 @@ const CreateForm = memo(({
             />;
           })}
         </Stack>
-        <Menu shadow="md" width={200} menuItemTabIndex={0}>
-          <Menu.Target>
-            <Button>質問を追加</Button>
-          </Menu.Target>
+        <Center>
+          <Menu shadow="md" width={200} menuItemTabIndex={0}>
+            <Menu.Target>
+              <Button>質問を追加</Button>
+            </Menu.Target>
 
-          <Menu.Dropdown>
-            <Menu.Label>ボタン</Menu.Label>
-            <Tooltip label="1つしか選択できないボタン" openDelay={0} closeDelay={0}>
-              <Menu.Item onClick={() => {
-                handlers.insert(questions.length, {
-                  type: "radio",
-                  key: nanoid(),
-                  data: {
-                    title: "",
-                    questions: [],
-                  }
-                })
-              }}>
-                ラジオボタン
-              </Menu.Item>
-            </Tooltip>
-            {/* <Tooltip label="複数選択できるボタン" openDelay={0} closeDelay={0}>
-              <Menu.Item>
-                チェックボックス
-              </Menu.Item>
-            </Tooltip>
+            <Menu.Dropdown>
+              <Menu.Label>ボタン</Menu.Label>
+              <Tooltip label="1つしか選択できないボタン" openDelay={0} closeDelay={0}>
+                <Menu.Item onClick={() => {
+                  handlers.insert(questions.length, {
+                    type: "radio",
+                    key: nanoid(),
+                    data: {
+                      title: "",
+                      questions: [],
+                    }
+                  })
+                }}>
+                  ラジオボタン
+                </Menu.Item>
+              </Tooltip>
+              {/* <Tooltip label="複数選択できるボタン" openDelay={0} closeDelay={0}>
+                <Menu.Item>
+                  チェックボックス
+                </Menu.Item>
+              </Tooltip>
 
-            <Menu.Divider />
+              <Menu.Divider />
 
-            <Menu.Label>テキスト・入力欄</Menu.Label>
-            <Tooltip label="1行テキスト" openDelay={0} closeDelay={0}>
-              <Menu.Item>
-                テキスト
-              </Menu.Item>
-            </Tooltip>
-            <Tooltip label="複数行テキスト" openDelay={0} closeDelay={0}>
-              <Menu.Item>
-                テキスト（複数行）
-              </Menu.Item>
-            </Tooltip>
-            <Tooltip label="数字" openDelay={0} closeDelay={0}>
-              <Menu.Item>
-                ナンバー
-              </Menu.Item>
-            </Tooltip> */}
-          </Menu.Dropdown>
-        </Menu>
-        <Group justify="space-between" mt="md">
+              <Menu.Label>テキスト・入力欄</Menu.Label>
+              <Tooltip label="1行テキスト" openDelay={0} closeDelay={0}>
+                <Menu.Item>
+                  テキスト
+                </Menu.Item>
+              </Tooltip>
+              <Tooltip label="複数行テキスト" openDelay={0} closeDelay={0}>
+                <Menu.Item>
+                  テキスト（複数行）
+                </Menu.Item>
+              </Tooltip>
+              <Tooltip label="数字" openDelay={0} closeDelay={0}>
+                <Menu.Item>
+                  ナンバー
+                </Menu.Item>
+              </Tooltip> */}
+            </Menu.Dropdown>
+          </Menu>
+        </Center>
+        <Group justify="space-between" mt="md" pt={"lg"} pb={"lg"}>
           <Button onClick={() => {
             Swal.fire({
               title: "本当に下書きを削除しますか？",
