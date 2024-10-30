@@ -1,11 +1,12 @@
 import clsx from "clsx";
-import { Button, Center, CloseButton, Fieldset, Grid, Stack, TextInput } from "@mantine/core";
+import { Button, Center, CloseButton, Fieldset, Grid, Stack, Text, TextInput } from "@mantine/core";
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import classes from './DndListHandle.module.css';
 import { GripVertical } from "lucide-react";
 import { useForm } from "@mantine/form";
 import { nanoid } from "nanoid";
 import { memo } from "react";
+import { style } from "@macaron-css/core";
 
 export type RadioButtonData = {
   title: string,
@@ -18,12 +19,18 @@ export type RadioButtonProps = {
   initialValues: RadioButtonData,
   setData: (data: RadioButtonData) => void,
   remove: () => void,
+  error?: string,
 }
+
+const errorStyle = style({
+  borderColor: "var(--mantine-color-red-6)",
+});
 
 export const CreateRadioButton = memo(({
   initialValues,
   setData,
   remove,
+  error,
 }: RadioButtonProps) => {
   const form = useForm<RadioButtonData>({
     mode: 'uncontrolled',
@@ -67,7 +74,7 @@ export const CreateRadioButton = memo(({
   ));
 
   return (
-    <Fieldset legend="ラジオボタン">
+    <Fieldset legend="ラジオボタン" className={clsx(error && errorStyle)}>
       <Stack>
         <Grid>
           <Grid.Col span="auto">
@@ -108,9 +115,9 @@ export const CreateRadioButton = memo(({
             )}
           </Droppable>
         </DragDropContext>
+
+        {error && <Text c="red" size="sm">{error}</Text>}
       </Stack>
     </Fieldset>
   )
-}, (prevProps, nextProps) => {
-  return prevProps.setData !== nextProps.setData;
 });

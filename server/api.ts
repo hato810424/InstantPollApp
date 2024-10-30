@@ -32,10 +32,10 @@ const FromComponentZod = z.object({
       key: z.string(),
       data: z.object({
         title: z.string(),
-        questions: z.array(z.any()),
+        questions: z.array(z.any()).min(1),
       })
     })
-  ),
+  ).min(1),
 });
 
 const handler = app

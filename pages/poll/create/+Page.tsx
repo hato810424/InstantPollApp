@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import { useData } from "vike-react/useData";
 import { Data } from "./+data.shared";
 import { useHydrate } from "@/utils/ssr/create-dehydrated-state";
@@ -12,6 +12,7 @@ import { useListState } from "@mantine/hooks";
 import { useForm } from "@mantine/form";
 import { nanoid } from "nanoid";
 import Swal from "sweetalert2";
+import { omit } from "es-toolkit";
 
 export default function Page() {
   const { dehydratedState } = useData<Data>();
@@ -52,25 +53,40 @@ export default function Page() {
   );
 }
 
-export const questionComponents = {
+const questionComponents = {
   radio: (props: RadioButtonProps) => <CreateRadioButton {...props} />,
 } as const;
-
 export type QuestionTypes = keyof typeof questionComponents;
 
 type ComponentProps<T> = T extends React.FC<infer P> ? P : never;
-export type FormComponentData<T extends keyof typeof questionComponents> = {
+export type FormComponentData<T extends QuestionTypes> = {
   type: T;
   key: string;
   data: Parameters<ComponentProps<typeof questionComponents[T]>["setData"]>[0];
 };
-export type FormComponentUnionType = FormComponentData<keyof typeof questionComponents>;
+export type FormComponentUnionType = FormComponentData<QuestionTypes>;
 export type FormComponent = {
   title: string,
   description: string,
   author: string,
   fields: FormComponentUnionType[],
 }
+
+const questionsCheck = {
+  radio: (data) => {
+    if (data.data.questions.length == 0) {
+      return {
+        error: "選択肢を最低1個追加してください"
+      };
+    }
+
+    return {};
+  }
+} as const satisfies {
+  [K in QuestionTypes]: (data: FormComponentData<K>) => {
+    error?: string,
+  };
+};
 
 const CreateForm = memo(({
   initData
@@ -87,7 +103,10 @@ const CreateForm = memo(({
   })
 
   const queryClient = useQueryClient();
-  const [questions, handlers] = useListState<FormComponentUnionType>(initData.fields);
+  const [putting, setPutting] = useState(false);
+  const [questions, handlers] = useListState<FormComponentUnionType & {
+    error?: string,
+  }>(initData.fields);
   const form = useForm({
     mode: 'uncontrolled',
     initialValues: {
@@ -98,20 +117,48 @@ const CreateForm = memo(({
   });
 
   return (
-    <form onSubmit={form.onSubmit((values) => {
+    <form 
+      onSubmit={form.onSubmit((values) => {
+        if (questions.length === 0) return;
+
+        let isError = false;
+        questions.forEach((question, index) => {
+          let result: {
+            error?: string
+          } = {};
+
+          if (question.type === "radio") {
+            result = questionsCheck.radio(question);
+          }
+
+          if (result.error) {
+            isError = true;
+            handlers.setItem(index, {
+              ...question,
+              error: result.error,
+            });
+          } else {
+            if (question.error) {
+              handlers.setItem(index, omit(question, ["error"]));
+            }
+          }
+        })
+        if (isError) return;
+        
         const data = {
           title: values.title,
           description: values.description ?? "",
           author: values.author,
-          fields: questions,
+          fields: questions.map(question => omit(question, ["error"])),
         } satisfies FormComponent;
   
-        queryClient.setQueryData(["/api/draft"], () => data);
-  
+        setPutting(true);
         rpc.api.draft.$put({
           json: data,
-        }).then(() => {
-          navigate("/poll/draft");
+        }).then(async () => {
+          queryClient.setQueryData(["/api/draft"], () => data);
+          await navigate("/poll/draft");
+          setPutting(false);
         })
       })}
     >
@@ -144,6 +191,7 @@ const CreateForm = memo(({
               remove={() => {
                 handlers.remove(index);
               }}
+              error={question.error}
             />;
           })}
         </Stack>
@@ -215,7 +263,11 @@ const CreateForm = memo(({
               }
             })
           }} color="red">下書きを削除</Button>
-          <Button type="submit">プレビューへ</Button>
+          {questions.length === 0 ? (
+            <Button loading={putting} disabled aria-label="質問を最低1つ追加してください">プレビューへ</Button>
+          ) : (
+            <Button type="submit" loading={putting}>プレビューへ</Button>
+          )}
         </Group>
       </Stack>
     </form>
