@@ -99,20 +99,16 @@ export const Poll = ({
             }
           } else {
             const text = await res.text();
-            const Toast = () => {
-              return (
+            withReactContent(Swal).fire({
+              title: "送信中に何かエラーが発生しました...",
+              html: (
                 <div>
                   <p>{res.status} - {res.statusText}</p>
                   <p style={{ 
                     whiteSpace: "pre-wrap",
                   }}>{text}</p>
                 </div>
-              )
-            }
-
-            withReactContent(Swal).fire({
-              title: "送信中に何かエラーが発生しました...",
-              html: <Toast />,
+              ),
               confirmButtonText: "閉じる",
               icon: "error",
             });
